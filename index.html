@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ระบบแจ้งเคลมสินค้าเสียหาย</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Prompt', sans-serif; background-color: #f8fafc; }
+        .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        #suggestions { max-height: 200px; overflow-y: auto; }
+        /* Premium SweetAlert style */
+        div:where(.swal2-container) div:where(.swal2-popup) { border-radius: 1.5rem !important; font-family: 'Prompt', sans-serif; }
+        div:where(.swal2-container) button:where(.swal2-styled) { border-radius: 0.75rem !important; font-weight: 500; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-slate-200 bg-slate-50">
+
+    <!-- Mobile Container -->
+    <div class="max-w-md mx-auto bg-white min-h-screen sm:min-h-[95vh] sm:mt-6 sm:mb-6 sm:rounded-[2.5rem] shadow-2xl relative pb-24 overflow-hidden border border-slate-100">
+        
+        <!-- Header -->
+        <div class="glass-header px-6 py-5 sticky top-0 z-30 border-b border-slate-100">
+            <h1 class="text-xl font-bold text-center text-slate-800 tracking-tight">
+                <i class="fa-solid fa-layer-group text-slate-400 mr-2"></i>ระบบแจ้งเคลม
+            </h1>
+        </div>
+
+        <!-- Navigation Tabs (Pill Style) -->
+        <div class="px-5 pt-4 pb-2 bg-white sticky top-[69px] z-20">
+            <div class="flex p-1 bg-slate-100/80 rounded-2xl border border-slate-100">
+                <button onclick="switchTab('report')" id="tab-report" class="flex-1 py-2.5 text-sm font-semibold text-center rounded-xl bg-white shadow-sm text-slate-800 transition-all">
+                    <i class="fa-solid fa-plus mr-1.5"></i> แจ้งสินค้า
+                </button>
+                <button onclick="switchTab('manage')" id="tab-manage" class="flex-1 py-2.5 text-sm font-medium text-center rounded-xl text-slate-500 hover:text-slate-700 transition-all">
+                    <i class="fa-solid fa-bars-staggered mr-1.5"></i> จัดการรายการ
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 1: REPORT ================= -->
+        <div id="section-report" class="p-6 animate-fade-in">
+            <form id="claimForm" class="space-y-5">
+                
+                <!-- ค้นหาสินค้า -->
+                <div class="relative">
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">ค้นหาสินค้า <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-search text-slate-400"></i>
+                        </div>
+                        <input type="text" id="searchInput" autocomplete="off" placeholder="พิมพ์ชื่อสินค้า หรือ SKU..." class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm font-medium">
+                    </div>
+                    <!-- Dropdown รายการสินค้า -->
+                    <ul id="suggestions" class="absolute z-10 w-full bg-white border border-slate-100 mt-2 rounded-2xl shadow-xl hidden overflow-hidden"></ul>
+                </div>
+
+                <!-- ข้อมูลสินค้าที่ดึงมาอัตโนมัติ -->
+                <div id="autoDataDisplay" class="bg-slate-800 text-white p-4 rounded-2xl text-sm shadow-md hidden">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="flex flex-col"><span class="text-slate-400 text-xs">SKU</span> <span id="dispSku" class="font-semibold"></span></div>
+                        <div class="flex flex-col"><span class="text-slate-400 text-xs">หน่วย</span> <span id="dispUnit" class="font-semibold"></span></div>
+                        <div class="col-span-2 flex flex-col"><span class="text-slate-400 text-xs">Vendor</span> <span id="dispVendor" class="font-semibold"></span></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- จำนวน -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">จำนวน <span class="text-rose-500">*</span></label>
+                        <input type="number" id="qty" required min="1" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm">
+                    </div>
+                    <!-- วันที่เกิดเหตุ/วันหมดอายุ -->
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">วันที่ (วว/ดด/ปป) <span class="text-rose-500">*</span></label>
+                        <input type="text" id="incidentDate" required placeholder="25/12/2567" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm">
+                    </div>
+                </div>
+
+                <!-- สาเหตุ -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">สาเหตุ <span class="text-rose-500">*</span></label>
+                    <select id="cause" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm appearance-none">
+                        <option value="">-- เลือกสาเหตุ --</option>
+                        <option value="สินค้าเสียหาย">สินค้าเสียหาย</option>
+                        <option value="สินค้าหมดอายุ">สินค้าหมดอายุ</option>
+                        <option value="สินค้าใกล้หมดอายุ">สินค้าใกล้หมดอายุ</option>
+                    </select>
+                </div>
+
+                <!-- คลังสินค้าต้นทาง -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">คลังสินค้าต้นทาง <span class="text-rose-500">*</span></label>
+                    <select id="warehouse" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm appearance-none">
+                        <option value="">-- เลือกคลังสินค้า --</option>
+                        <option value="W1">W1</option>
+                        <option value="W2">W2</option>
+                        <option value="W3">W3</option>
+                        <option value="W4">W4</option>
+                        <option value="W5">W5</option>
+                        <option value="C1">C1</option>
+                        <option value="C2">C2</option>
+                    </select>
+                </div>
+
+                <!-- ชื่อพนักงาน -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">ผู้แจ้ง/พนักงาน <span class="text-rose-500">*</span></label>
+                    <input type="text" id="empName" required placeholder="ระบุชื่อ..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm">
+                </div>
+
+                <!-- หมายเหตุ -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">หมายเหตุ</label>
+                    <textarea id="note" rows="2" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)..."></textarea>
+                </div>
+
+                <!-- ปุ่มเพิ่มรายการ -->
+                <button type="submit" id="addBtn" class="w-full bg-slate-900 text-white font-semibold py-4 rounded-2xl hover:bg-slate-800 hover:-translate-y-0.5 transition-all shadow-lg shadow-slate-900/20 mt-2 flex justify-center items-center">
+                    <i class="fa-solid fa-plus mr-2"></i> เพิ่มเข้ารายการ
+                </button>
+            </form>
+
+            <!-- ================= SECTION: DRAFT LIST ================= -->
+            <div id="draftSection" class="mt-8 pt-6 border-t border-slate-100 hidden">
+                <div class="flex justify-between items-center mb-4 px-1">
+                    <h3 class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-list-check text-slate-400 mr-2"></i>รายการเตรียมแจ้ง</h3>
+                    <span id="draftCount" class="bg-slate-800 text-white text-xs font-bold px-2.5 py-1 rounded-full">0</span>
+                </div>
+                <div id="draftContainer" class="space-y-3 max-h-[300px] overflow-y-auto no-scrollbar pb-2">
+                    <!-- Draft items will appear here -->
+                </div>
+                <!-- ปุ่มบันทึกข้อมูลทั้งหมด -->
+                <button onclick="submitAllDrafts()" id="submitAllBtn" class="w-full bg-emerald-600 text-white font-semibold py-4 rounded-2xl hover:bg-emerald-700 hover:-translate-y-0.5 transition-all shadow-lg shadow-emerald-600/20 mt-4 flex justify-center items-center">
+                    <i class="fa-solid fa-paper-plane mr-2"></i> ส่งข้อมูลทั้งหมด
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 2: MANAGE ================= -->
+        <div id="section-manage" class="p-5 hidden animate-fade-in bg-slate-50 min-h-screen">
+            
+            <!-- Filters -->
+            <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-100 mb-5">
+                <div class="flex items-center justify-between mb-3 px-1">
+                    <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-filter text-slate-400 mr-1.5"></i> ตัวกรองข้อมูล</h3>
+                    <button onclick="loadClaims()" class="text-xs font-medium text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2.5 py-1.5 rounded-lg transition-colors"><i class="fa-solid fa-rotate-right mr-1"></i>รีเฟรช</button>
+                </div>
+                <div class="grid grid-cols-1 gap-3">
+                    <select id="filterStatus" onchange="renderClaims()" class="text-sm bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 w-full outline-none focus:ring-2 focus:ring-slate-800 appearance-none font-medium text-slate-700">
+                        <option value="all">สถานะทั้งหมด</option>
+                        <option value="รอเคลม">รอเคลม</option>
+                        <option value="แจ้งเคลมแล้ว">แจ้งเคลมแล้ว</option>
+                        <option value="ส่งเคลมแล้ว">ส่งเคลมแล้ว</option>
+                        <option value="ได้รับสินค้าเคลมแล้ว">ได้รับสินค้าเคลมแล้ว</option>
+                    </select>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-search text-slate-400 text-xs"></i>
+                        </div>
+                        <input type="text" id="filterVendor" oninput="renderClaims()" placeholder="ค้นหา Vendor หรือ ชื่อสินค้า..." class="text-sm bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 w-full outline-none focus:ring-2 focus:ring-slate-800">
+                    </div>
+                </div>
+            </div>
+
+            <!-- List of Claims -->
+            <div id="claimsContainer" class="space-y-4 pb-10">
+                <!-- Data will be injected here -->
+                <div class="text-center py-10 text-slate-400">
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+                    <p class="text-sm">กำลังโหลดข้อมูล...</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        // =================ตั้งค่า URL ของ Google Apps Script=================
+        // เอา URL ที่ได้จากขั้นตอนที่ 8 มาวางในเครื่องหมายคำพูดด้านล่างนี้
+        // ตัวอย่าง: const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby.../exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyONQg4PVcPewaqRoFcrYnFh_VAwulN_1pGBSY1JEuVo2e7eyuSoGFSfYf7MqqFA4nM/exec'; 
+        // ===============================================================
+
+        // ฐานข้อมูลจำลอง (สำหรับการทดสอบ หากยังไม่ได้เชื่อม Apps Script)
+        let productsDB = [
+            { sku: 'P001', name: 'นมสดพาสเจอร์ไรส์ 2L', unit: 'แกลลอน', vendor: 'Dairy Hub' },
+            { sku: 'P002', name: 'ขนมปังฟาร์มเฮ้าส์', unit: 'แถว', vendor: 'Bakery Co.' },
+            { sku: 'P003', name: 'น้ำส้ม 100% ตราดอกไม้', unit: 'ขวด', vendor: 'Juice Fresh' },
+            { sku: 'P004', name: 'ไข่ไก่ เบอร์ 0', unit: 'แผง', vendor: 'Farm Fresh' },
+            { sku: 'P005', name: 'ปลากระป๋อง', unit: 'กระป๋อง', vendor: 'Sea Food Ltd.' }
+        ];
+
+        let claimsDB = [
+            { rowId: 2, itemName: 'นมสดพาสเจอร์ไรส์ 2L', sku: 'P001', vendor: 'Dairy Hub', qty: 5, unit: 'แกลลอน', warehouse: 'W1', cause: 'สินค้าหมดอายุ', status: 'รอเคลม' },
+            { rowId: 3, itemName: 'ไข่ไก่ เบอร์ 0', sku: 'P004', vendor: 'Farm Fresh', qty: 2, unit: 'แผง', warehouse: 'C1', cause: 'สินค้าเสียหาย', status: 'แจ้งเคลมแล้ว' },
+            { rowId: 4, itemName: 'น้ำดื่มบรรจุขวด', sku: 'P006', vendor: '', qty: 10, unit: 'แพ็ค', warehouse: 'W2', cause: 'สินค้าเสียหาย', status: 'รอเคลม' } // เพิ่มข้อมูลจำลองกรณีไม่มี Vendor
+        ];
+
+        let selectedProduct = null;
+        let draftItems = []; // เพิ่มตัวแปรสำหรับเก็บรายการชั่วคราว
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            if(SCRIPT_URL !== '') {
+                fetchProductsFromSheet();
+            }
+            setupAutocomplete();
+        });
+
+        // --- Tab Switching ---
+        function switchTab(tab) {
+            const reportTab = document.getElementById('tab-report');
+            const manageTab = document.getElementById('tab-manage');
+            const reportSec = document.getElementById('section-report');
+            const manageSec = document.getElementById('section-manage');
+
+            const activeClass = "flex-1 py-2.5 text-sm font-semibold text-center rounded-xl bg-white shadow-sm text-slate-800 transition-all";
+            const inactiveClass = "flex-1 py-2.5 text-sm font-medium text-center rounded-xl text-slate-500 hover:text-slate-700 transition-all";
+
+            if (tab === 'report') {
+                reportTab.className = activeClass;
+                manageTab.className = inactiveClass;
+                reportSec.classList.remove('hidden');
+                manageSec.classList.add('hidden');
+            } else {
+                manageTab.className = activeClass;
+                reportTab.className = inactiveClass;
+                manageSec.classList.remove('hidden');
+                reportSec.classList.add('hidden');
+                loadClaims(); // Load data when opening manage tab
+            }
+        }
+
+        // --- Data Fetching (Google Apps Script) ---
+        async function fetchProductsFromSheet() {
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=getProducts`);
+                productsDB = await res.json();
+            } catch (err) {
+                console.error("Using mock product data. Error:", err);
+            }
+        }
+
+        async function loadClaims() {
+            const container = document.getElementById('claimsContainer');
+            container.innerHTML = '<div class="text-center py-10 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><p class="text-sm">กำลังโหลดข้อมูล...</p></div>';
+            
+            if(SCRIPT_URL !== '') {
+                try {
+                    const res = await fetch(`${SCRIPT_URL}?action=getClaims`);
+                    claimsDB = await res.json();
+                } catch (err) {
+                    console.error("Using mock claims data.", err);
+                }
+            }
+            renderClaims();
+        }
+
+        // --- Autocomplete Logic ---
+        function setupAutocomplete() {
+            const input = document.getElementById('searchInput');
+            const suggList = document.getElementById('suggestions');
+            const autoDisplay = document.getElementById('autoDataDisplay');
+
+            input.addEventListener('input', function() {
+                const val = this.value.toLowerCase();
+                suggList.innerHTML = '';
+                selectedProduct = null;
+                autoDisplay.classList.add('hidden');
+
+                if (!val) {
+                    suggList.classList.add('hidden');
+                    return;
+                }
+
+                const matches = productsDB.filter(p => p.name.toLowerCase().includes(val) || p.sku.toLowerCase().includes(val));
+                
+                if (matches.length > 0) {
+                    suggList.classList.remove('hidden');
+                    matches.forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = "px-5 py-3 hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-0 text-sm transition-colors";
+                        li.innerHTML = `<span class="font-bold text-slate-700">${item.name}</span> <span class="text-xs font-medium text-slate-400 ml-2">${item.sku}</span>`;
+                        li.onclick = () => {
+                            input.value = item.name;
+                            selectedProduct = item;
+                            suggList.classList.add('hidden');
+                            
+                            // ดึงข้อมูลมาแสดงอัตโนมัติ
+                            document.getElementById('dispSku').innerText = item.sku;
+                            document.getElementById('dispUnit').innerText = item.unit;
+                            document.getElementById('dispVendor').innerText = item.vendor;
+                            autoDisplay.classList.remove('hidden');
+                            autoDisplay.classList.add('animate-fade-in');
+                        };
+                        suggList.appendChild(li);
+                    });
+                } else {
+                    suggList.classList.add('hidden');
+                }
+            });
+
+            // ปิด dropdown เมื่อคลิกที่อื่น
+            document.addEventListener('click', function(e) {
+                if(e.target !== input) suggList.classList.add('hidden');
+            });
+        }
+
+        // --- Date Parser (แปลง พ.ศ. เป็น ค.ศ.) ---
+        function parseDate(dateStr) {
+            let parts = dateStr.split('/');
+            if (parts.length === 3) {
+                let d = parts[0].padStart(2, '0');
+                let m = parts[1].padStart(2, '0');
+                let y = parseInt(parts[2]);
+                if (y >= 2500) y -= 543; // แปลง พ.ศ. เป็น ค.ศ.
+                return `${d}/${m}/${y}`;
+            }
+            return dateStr;
+        }
+
+        // --- Form Submission (เปลี่ยนเป็นการเพิ่มลงรายการชั่วคราว) ---
+        document.getElementById('claimForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!selectedProduct) {
+                Swal.fire({ icon: 'warning', title: 'กรุณาเลือกสินค้าจากรายการ', confirmButtonColor: '#1e293b' });
+                return;
+            }
+
+            const rawDate = document.getElementById('incidentDate').value;
+            const formattedDate = parseDate(rawDate);
+
+            const payload = {
+                id: Date.now(), // สร้าง ID ชั่วคราวสำหรับการลบ
+                action: 'add',
+                itemName: selectedProduct.name,
+                sku: selectedProduct.sku,
+                unit: selectedProduct.unit,
+                vendor: selectedProduct.vendor,
+                qty: document.getElementById('qty').value,
+                incidentDate: formattedDate,
+                cause: document.getElementById('cause').value,
+                warehouse: document.getElementById('warehouse').value,
+                empName: document.getElementById('empName').value,
+                note: document.getElementById('note').value
+            };
+
+            // เพิ่มลงอาเรย์และแสดงผล
+            draftItems.push(payload);
+            renderDrafts();
+
+            // เคลียร์เฉพาะฟิลด์สินค้า (คงข้อมูล คลังสินค้า และ ชื่อพนักงาน ไว้เพื่อความไวในการคีย์)
+            document.getElementById('searchInput').value = '';
+            document.getElementById('qty').value = '';
+            document.getElementById('incidentDate').value = '';
+            document.getElementById('cause').value = '';
+            document.getElementById('note').value = '';
+            
+            selectedProduct = null;
+            document.getElementById('autoDataDisplay').classList.add('hidden');
+
+            // เลื่อนจอไปที่รายการชั่วคราว
+            document.getElementById('draftSection').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // --- Draft Management ---
+        function renderDrafts() {
+            const draftSection = document.getElementById('draftSection');
+            const draftContainer = document.getElementById('draftContainer');
+            const draftCount = document.getElementById('draftCount');
+
+            if (draftItems.length === 0) {
+                draftSection.classList.add('hidden');
+                return;
+            }
+
+            draftSection.classList.remove('hidden');
+            draftCount.innerText = draftItems.length;
+            draftContainer.innerHTML = '';
+
+            draftItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center relative group hover:border-slate-300 transition-colors";
+                div.innerHTML = `
+                    <div class="pr-10 w-full">
+                        <p class="font-bold text-sm text-slate-800 line-clamp-1">${item.itemName}</p>
+                        <p class="text-[11px] font-medium text-slate-500 mt-1.5 flex items-center gap-2">
+                            <span class="bg-slate-100 px-2 py-0.5 rounded-md text-slate-600">${item.qty} ${item.unit}</span>
+                            <span class="bg-rose-50 text-rose-600 px-2 py-0.5 rounded-md">${item.cause}</span>
+                        </p>
+                    </div>
+                    <button type="button" onclick="removeDraft(${item.id})" class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-slate-50 text-slate-400 hover:text-rose-500 hover:bg-rose-50 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                `;
+                draftContainer.appendChild(div);
+            });
+        }
+
+        function removeDraft(id) {
+            draftItems = draftItems.filter(item => item.id !== id);
+            renderDrafts();
+        }
+
+        // --- Submit All Drafts to Server ---
+        async function submitAllDrafts() {
+            if (draftItems.length === 0) return;
+
+            const btn = document.getElementById('submitAllBtn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังบันทึก...';
+            btn.disabled = true;
+
+            let successCount = 0;
+
+            try {
+                // แสดง Popup โหลดพร้อมเปอร์เซ็นต์
+                Swal.fire({
+                    title: 'กำลังส่งข้อมูล...',
+                    html: `กำลังบันทึก <b>0</b> / ${draftItems.length} รายการ`,
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading() }
+                });
+
+                if(SCRIPT_URL !== '') {
+                    // วนลูปส่งทีละรายการไปยัง Apps Script เดิม
+                    for (let i = 0; i < draftItems.length; i++) {
+                        const item = draftItems[i];
+                        const payload = { ...item };
+                        delete payload.id; // ลบ id ชั่วคราวออกก่อนส่ง
+                        
+                        await fetch(SCRIPT_URL, {
+                            method: 'POST',
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        successCount++;
+                        Swal.update({ html: `กำลังบันทึก <b>${successCount}</b> / ${draftItems.length} รายการ` });
+                    }
+                } else {
+                    // แบบจำลอง (Mock) เมื่อยังไม่มี SCRIPT_URL
+                    for (let i = 0; i < draftItems.length; i++) {
+                        await new Promise(r => setTimeout(r, 600)); // ดีเลย์จำลองการโหลด
+                        const payload = { ...draftItems[i], rowId: Date.now() + i, status: 'รอเคลม' };
+                        delete payload.id;
+                        claimsDB.push(payload);
+                        successCount++;
+                        Swal.update({ html: `กำลังบันทึก <b>${successCount}</b> / ${draftItems.length} รายการ` });
+                    }
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'บันทึกสำเร็จ!',
+                    text: `บันทึกข้อมูลแจ้งเคลมทั้งหมด ${successCount} รายการเรียบร้อยแล้ว`,
+                    confirmButtonColor: '#10b981',
+                    timer: 2500
+                });
+                
+                // ล้างค่าเมื่อบันทึกเสร็จ
+                draftItems = [];
+                renderDrafts();
+
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message, confirmButtonColor: '#1e293b' });
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> บันทึกข้อมูลทั้งหมด';
+                btn.disabled = false;
+            }
+        }
+
+        // --- Render Manage Section ---
+        function renderClaims() {
+            const container = document.getElementById('claimsContainer');
+            const statusFilter = document.getElementById('filterStatus').value;
+            const vendorFilter = document.getElementById('filterVendor').value.toLowerCase();
+
+            container.innerHTML = '';
+
+            const filtered = claimsDB.filter(c => {
+                const matchStatus = statusFilter === 'all' || c.status === statusFilter;
+                const matchVendor = (c.vendor && c.vendor.toLowerCase().includes(vendorFilter)) || c.itemName.toLowerCase().includes(vendorFilter);
+                return matchStatus && matchVendor;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="text-center py-12 text-slate-400"><div class="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm border border-slate-100"><i class="fa-solid fa-box-open text-2xl text-slate-300"></i></div><p class="font-medium text-sm">ไม่พบรายการ</p></div>';
+                return;
+            }
+
+            filtered.forEach(c => {
+                // สี Badge สถานะแบบ Premium
+                let statusColor = 'bg-amber-50 text-amber-600 border-amber-200';
+                if(c.status === 'แจ้งเคลมแล้ว') statusColor = 'bg-sky-50 text-sky-600 border-sky-200';
+                if(c.status === 'ส่งเคลมแล้ว') statusColor = 'bg-indigo-50 text-indigo-600 border-indigo-200';
+                if(c.status === 'ได้รับสินค้าเคลมแล้ว') statusColor = 'bg-emerald-50 text-emerald-600 border-emerald-200';
+
+                // จัดการแสดงผล Vendor
+                let vendorHtml = '';
+                if (c.vendor && c.vendor.trim() !== '') {
+                    vendorHtml = `<span class="text-slate-400 w-5"><i class="fa-solid fa-building"></i></span> <span class="font-semibold text-slate-700 truncate">${c.vendor}</span>`;
+                } else {
+                    vendorHtml = `<span class="text-slate-400 w-5"><i class="fa-solid fa-box"></i></span> <span class="font-medium text-slate-600 truncate">${c.itemName}</span> <button onclick="openAddVendorModal(${c.rowId})" class="ml-auto px-2 py-1 bg-slate-800 text-white rounded-lg text-[10px] font-medium hover:bg-slate-700 transition-colors shadow-sm"><i class="fa-solid fa-plus"></i> Vendor</button>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 rounded-3xl shadow-sm border border-slate-100 relative hover:shadow-md transition-shadow";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="font-bold text-slate-800 text-sm line-clamp-2 pr-3 leading-snug">${c.itemName}</h4>
+                        <span class="px-2.5 py-1 rounded-lg border text-[10px] font-bold whitespace-nowrap ${statusColor}">${c.status}</span>
+                    </div>
+                    <div class="bg-slate-50 p-3.5 rounded-2xl grid grid-cols-2 gap-y-2.5 text-[11px] text-slate-500 mb-4 font-medium">
+                        <p class="flex items-center"><span class="text-slate-400 w-5"><i class="fa-solid fa-barcode"></i></span> ${c.sku}</p>
+                        <p class="flex items-center"><span class="text-slate-400 w-5"><i class="fa-solid fa-cubes"></i></span> ${c.qty} ${c.unit}</p>
+                        <p class="col-span-2 flex items-center">${vendorHtml}</p>
+                        <p class="col-span-2 flex items-center text-rose-500"><span class="w-5"><i class="fa-solid fa-triangle-exclamation"></i></span> <span>${c.cause} <span class="text-slate-400 ml-1 font-normal">(${c.warehouse})</span></span></p>
+                    </div>
+                    <button onclick="openUpdateModal(${c.rowId}, '${c.status}')" class="w-full py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm flex justify-center items-center">
+                        <i class="fa-solid fa-pen-to-square mr-2 text-slate-400"></i> อัพเดทสถานะ
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // --- Add Vendor Modal ---
+        async function openAddVendorModal(rowId) {
+            const { value: vendorName } = await Swal.fire({
+                title: 'เพิ่ม Vendor',
+                input: 'text',
+                inputLabel: 'ระบุชื่อ Vendor สำหรับสินค้านี้',
+                inputPlaceholder: 'พิมพ์ชื่อ Vendor...',
+                showCancelButton: true,
+                confirmButtonText: 'บันทึก',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#1e293b',
+                confirmButtonColor: '#3b82f6',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'กรุณาระบุชื่อ Vendor!'
+                    }
+                }
+            });
+
+            if (vendorName) {
+                Swal.fire({
+                    title: 'กำลังอัพเดท...',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading() }
+                });
+
+                try {
+                    if(SCRIPT_URL !== '') {
+                        await fetch(SCRIPT_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                action: 'updateVendor',
+                                rowId: rowId,
+                                vendor: vendorName
+                            })
+                        });
+                    } else {
+                        // จำลองโหลดหากยังไม่ได้ใส่ SCRIPT_URL
+                        await new Promise(r => setTimeout(r, 800));
+                    }
+
+                    // อัพเดทข้อมูลในระบบให้แสดงผลทันทีโดยไม่ต้องรีเฟรช
+                    const itemIndex = claimsDB.findIndex(c => c.rowId === rowId);
+                    if(itemIndex > -1) {
+                        claimsDB[itemIndex].vendor = vendorName;
+                    }
+
+                    Swal.fire({ icon: 'success', title: 'เพิ่ม Vendor สำเร็จ', timer: 1500, showConfirmButton: false });
+                    renderClaims(); // Refresh list
+
+                } catch (err) {
+                    Swal.fire({ icon: 'error', title: 'อัพเดทล้มเหลว', text: err.message });
+                }
+            }
+        }
+
+        // --- Update Status Modal ---
+        async function openUpdateModal(rowId, currentStatus) {
+            const { value: formValues } = await Swal.fire({
+                title: 'จัดการสถานะ',
+                html: `
+                    <div class="text-left mt-2 space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ปรับสถานะใหม่</label>
+                            <select id="swal-status" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm font-medium">
+                                <option value="รอเคลม" ${currentStatus==='รอเคลม'?'selected':''}>รอเคลม</option>
+                                <option value="แจ้งเคลมแล้ว" ${currentStatus==='แจ้งเคลมแล้ว'?'selected':''}>แจ้งเคลมแล้ว</option>
+                                <option value="ส่งเคลมแล้ว" ${currentStatus==='ส่งเคลมแล้ว'?'selected':''}>ส่งเคลมแล้ว</option>
+                                <option value="ได้รับสินค้าเคลมแล้ว" ${currentStatus==='ได้รับสินค้าเคลมแล้ว'?'selected':''}>ได้รับสินค้าเคลมแล้ว</option>
+                            </select>
+                        </div>
+                        <div id="returnDateDiv" style="display: ${currentStatus==='ได้รับสินค้าเคลมแล้ว'?'block':'none'};">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">วันที่ส่งคืน (วว/ดด/ปป)</label>
+                            <input type="text" id="swal-returndate" placeholder="เช่น 25/12/2567" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm">
+                        </div>
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'บันทึก',
+                cancelButtonText: 'ยกเลิก',
+                confirmButtonColor: '#1e293b',
+                didOpen: () => {
+                    // Logic to show/hide return date input
+                    const statusSelect = document.getElementById('swal-status');
+                    const returnDiv = document.getElementById('returnDateDiv');
+                    statusSelect.addEventListener('change', (e) => {
+                        if(e.target.value === 'ได้รับสินค้าเคลมแล้ว') {
+                            returnDiv.style.display = 'block';
+                        } else {
+                            returnDiv.style.display = 'none';
+                        }
+                    });
+                },
+                preConfirm: () => {
+                    return {
+                        status: document.getElementById('swal-status').value,
+                        returnDate: document.getElementById('swal-returndate').value
+                    }
+                }
+            });
+
+            if (formValues) {
+                // Formatting Return Date
+                let formattedReturnDate = "";
+                if(formValues.status === 'ได้รับสินค้าเคลมแล้ว' && formValues.returnDate) {
+                    formattedReturnDate = parseDate(formValues.returnDate);
+                }
+
+                // Show loading
+                Swal.fire({
+                    title: 'กำลังอัพเดท...',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading() }
+                });
+
+                try {
+                    if(SCRIPT_URL !== '') {
+                        await fetch(SCRIPT_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                action: 'updateStatus',
+                                rowId: rowId,
+                                status: formValues.status,
+                                returnDate: formattedReturnDate
+                            })
+                        });
+                    } else {
+                        // Mock update
+                        await new Promise(r => setTimeout(r, 800));
+                        const itemIndex = claimsDB.findIndex(c => c.rowId === rowId);
+                        if(itemIndex > -1) {
+                            claimsDB[itemIndex].status = formValues.status;
+                        }
+                    }
+
+                    Swal.fire({ icon: 'success', title: 'อัพเดทสถานะสำเร็จ', timer: 1500, showConfirmButton: false });
+                    renderClaims(); // Refresh list
+
+                } catch (err) {
+                    Swal.fire({ icon: 'error', title: 'อัพเดทล้มเหลว', text: err.message });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
