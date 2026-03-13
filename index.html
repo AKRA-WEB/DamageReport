@@ -58,7 +58,7 @@
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <i class="fa-solid fa-search text-slate-400"></i>
                         </div>
-                        <input type="text" id="searchInput" autocomplete="off" placeholder="พิมพ์ชื่อสินค้า หรือ SKU..." class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm font-medium">
+                        <input type="text" id="searchInput" autocomplete="off" placeholder="พิมพ์ชื่อสินค้า..." class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm font-medium">
                     </div>
                     <!-- Dropdown รายการสินค้า -->
                     <ul id="suggestions" class="absolute z-10 w-full bg-white border border-slate-100 mt-2 rounded-2xl shadow-xl hidden overflow-hidden"></ul>
@@ -202,6 +202,8 @@
             { sku: 'P005', name: 'ปลากระป๋อง', unit: 'กระป๋อง', vendor: 'Sea Food Ltd.' }
         ];
 
+        let vendorsDB = ['Dairy Hub', 'Bakery Co.', 'Juice Fresh', 'Farm Fresh', 'Sea Food Ltd.']; // เพิ่มฐานข้อมูลจำลองสำหรับ Vendor
+
         let claimsDB = [
             { rowId: 2, itemName: 'นมสดพาสเจอร์ไรส์ 2L', sku: 'P001', vendor: 'Dairy Hub', qty: 5, unit: 'แกลลอน', warehouse: 'W1', cause: 'สินค้าหมดอายุ', status: 'รอเคลม' },
             { rowId: 3, itemName: 'ไข่ไก่ เบอร์ 0', sku: 'P004', vendor: 'Farm Fresh', qty: 2, unit: 'แผง', warehouse: 'C1', cause: 'สินค้าเสียหาย', status: 'แจ้งเคลมแล้ว' },
@@ -215,6 +217,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             if(SCRIPT_URL !== '') {
                 fetchProductsFromSheet();
+                fetchVendorsFromSheet(); // ดึงข้อมูล Vendor เมื่อเปิดเว็บ
             }
             setupAutocomplete();
         });
@@ -253,6 +256,15 @@
             }
         }
 
+        async function fetchVendorsFromSheet() {
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=getVendors`);
+                vendorsDB = await res.json();
+            } catch (err) {
+                console.error("Using mock vendor data. Error:", err);
+            }
+        }
+
         async function loadClaims() {
             const container = document.getElementById('claimsContainer');
             container.innerHTML = '<div class="text-center py-10 text-gray-400"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><p class="text-sm">กำลังโหลดข้อมูล...</p></div>';
@@ -285,7 +297,8 @@
                     return;
                 }
 
-                const matches = productsDB.filter(p => p.name.toLowerCase().includes(val) || p.sku.toLowerCase().includes(val));
+                // ค้นหาเฉพาะจากชื่อสินค้า (Column B ของ Sheet ซึ่งคือ p.name ใน object)
+                const matches = productsDB.filter(p => p.name.toLowerCase().includes(val));
                 
                 if (matches.length > 0) {
                     suggList.classList.remove('hidden');
@@ -476,7 +489,7 @@
             } catch (err) {
                 Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message, confirmButtonColor: '#1e293b' });
             } finally {
-                btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> บันทึกข้อมูลทั้งหมด';
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> ส่งข้อมูลทั้งหมด';
                 btn.disabled = false;
             }
         }
@@ -500,57 +513,113 @@
                 return;
             }
 
+            // จัดกลุ่มข้อมูล
+            const groupedByVendor = {};
+            const standaloneClaims = [];
+
             filtered.forEach(c => {
-                // สี Badge สถานะแบบ Premium
+                if (c.vendor && c.vendor.trim() !== '') {
+                    if (!groupedByVendor[c.vendor]) groupedByVendor[c.vendor] = [];
+                    groupedByVendor[c.vendor].push(c);
+                } else {
+                    standaloneClaims.push(c);
+                }
+            });
+
+            // ฟังก์ชันสร้างการ์ดสินค้า
+            const createCardHTML = (c, isGrouped) => {
                 let statusColor = 'bg-amber-50 text-amber-600 border-amber-200';
                 if(c.status === 'แจ้งเคลมแล้ว') statusColor = 'bg-sky-50 text-sky-600 border-sky-200';
                 if(c.status === 'ส่งเคลมแล้ว') statusColor = 'bg-indigo-50 text-indigo-600 border-indigo-200';
                 if(c.status === 'ได้รับสินค้าเคลมแล้ว') statusColor = 'bg-emerald-50 text-emerald-600 border-emerald-200';
 
-                // จัดการแสดงผล Vendor
+                // หากยังไม่มี Vendor ให้โชว์ชื่อสินค้าและปุ่มเพิ่ม (หากจัดกลุ่มแล้วจะซ่อนไปเพื่อให้ดูสะอาดตา)
                 let vendorHtml = '';
-                if (c.vendor && c.vendor.trim() !== '') {
-                    vendorHtml = `<span class="text-slate-400 w-5"><i class="fa-solid fa-building"></i></span> <span class="font-semibold text-slate-700 truncate">${c.vendor}</span>`;
-                } else {
-                    vendorHtml = `<span class="text-slate-400 w-5"><i class="fa-solid fa-box"></i></span> <span class="font-medium text-slate-600 truncate">${c.itemName}</span> <button onclick="openAddVendorModal(${c.rowId})" class="ml-auto px-2 py-1 bg-slate-800 text-white rounded-lg text-[10px] font-medium hover:bg-slate-700 transition-colors shadow-sm"><i class="fa-solid fa-plus"></i> Vendor</button>`;
+                if (!isGrouped) {
+                    vendorHtml = `<p class="col-span-2 flex items-center"><span class="text-slate-400 w-5"><i class="fa-solid fa-box"></i></span> <span class="font-medium text-slate-600 truncate">${c.itemName}</span> <button onclick="openAddVendorModal(${c.rowId})" class="ml-auto px-2 py-1 bg-slate-800 text-white rounded-lg text-[10px] font-medium hover:bg-slate-700 transition-colors shadow-sm"><i class="fa-solid fa-plus"></i> Vendor</button></p>`;
                 }
 
-                const card = document.createElement('div');
-                card.className = "bg-white p-5 rounded-3xl shadow-sm border border-slate-100 relative hover:shadow-md transition-shadow";
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
-                        <h4 class="font-bold text-slate-800 text-sm line-clamp-2 pr-3 leading-snug">${c.itemName}</h4>
-                        <span class="px-2.5 py-1 rounded-lg border text-[10px] font-bold whitespace-nowrap ${statusColor}">${c.status}</span>
+                return `
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 relative hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="font-bold text-slate-800 text-sm line-clamp-2 pr-3 leading-snug">${c.itemName}</h4>
+                            <span class="px-2.5 py-1 rounded-lg border text-[10px] font-bold whitespace-nowrap ${statusColor}">${c.status}</span>
+                        </div>
+                        <div class="bg-slate-50 p-3.5 rounded-2xl grid grid-cols-2 gap-y-2.5 text-[11px] text-slate-500 mb-4 font-medium">
+                            <p class="flex items-center"><span class="text-slate-400 w-5"><i class="fa-solid fa-barcode"></i></span> ${c.sku}</p>
+                            <p class="flex items-center"><span class="text-slate-400 w-5"><i class="fa-solid fa-cubes"></i></span> ${c.qty} ${c.unit}</p>
+                            ${vendorHtml}
+                            <p class="col-span-2 flex items-center text-rose-500"><span class="w-5"><i class="fa-solid fa-triangle-exclamation"></i></span> <span>${c.cause} <span class="text-slate-400 ml-1 font-normal">(${c.warehouse})</span></span></p>
+                        </div>
+                        <button onclick="openUpdateModal(${c.rowId}, '${c.status}')" class="w-full py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm flex justify-center items-center">
+                            <i class="fa-solid fa-pen-to-square mr-2 text-slate-400"></i> อัพเดทสถานะ
+                        </button>
                     </div>
-                    <div class="bg-slate-50 p-3.5 rounded-2xl grid grid-cols-2 gap-y-2.5 text-[11px] text-slate-500 mb-4 font-medium">
-                        <p class="flex items-center"><span class="text-slate-400 w-5"><i class="fa-solid fa-barcode"></i></span> ${c.sku}</p>
-                        <p class="flex items-center"><span class="text-slate-400 w-5"><i class="fa-solid fa-cubes"></i></span> ${c.qty} ${c.unit}</p>
-                        <p class="col-span-2 flex items-center">${vendorHtml}</p>
-                        <p class="col-span-2 flex items-center text-rose-500"><span class="w-5"><i class="fa-solid fa-triangle-exclamation"></i></span> <span>${c.cause} <span class="text-slate-400 ml-1 font-normal">(${c.warehouse})</span></span></p>
-                    </div>
-                    <button onclick="openUpdateModal(${c.rowId}, '${c.status}')" class="w-full py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm flex justify-center items-center">
-                        <i class="fa-solid fa-pen-to-square mr-2 text-slate-400"></i> อัพเดทสถานะ
-                    </button>
                 `;
-                container.appendChild(card);
+            };
+
+            // แสดงผลกลุ่มที่มี Vendor
+            Object.keys(groupedByVendor).forEach(vendor => {
+                const items = groupedByVendor[vendor];
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'mb-6';
+                
+                groupDiv.innerHTML = `
+                    <div class="flex items-center mb-3 px-1">
+                        <div class="bg-indigo-100 text-indigo-600 w-8 h-8 rounded-xl flex items-center justify-center mr-3 shadow-sm">
+                            <i class="fa-solid fa-building text-sm"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-sm">${vendor}</h3>
+                        <span class="ml-auto bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-lg">${items.length} รายการ</span>
+                    </div>
+                    <div class="space-y-4 pl-4 border-l-2 border-indigo-100 ml-4">
+                        ${items.map(c => createCardHTML(c, true)).join('')}
+                    </div>
+                `;
+                container.appendChild(groupDiv);
             });
+
+            // แสดงผลรายการที่ไม่มี Vendor (แยกเดี่ยว)
+            if (standaloneClaims.length > 0) {
+                const standaloneDiv = document.createElement('div');
+                standaloneDiv.className = 'mb-6 mt-8';
+                
+                standaloneDiv.innerHTML = `
+                    <div class="flex items-center mb-3 px-1">
+                        <div class="bg-rose-100 text-rose-600 w-8 h-8 rounded-xl flex items-center justify-center mr-3 shadow-sm">
+                            <i class="fa-solid fa-box-open text-sm"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-800 text-sm">รายการรอเพิ่ม Vendor</h3>
+                        <span class="ml-auto bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-lg">${standaloneClaims.length} รายการ</span>
+                    </div>
+                    <div class="space-y-4 pl-4 border-l-2 border-rose-100 ml-4">
+                        ${standaloneClaims.map(c => createCardHTML(c, false)).join('')}
+                    </div>
+                `;
+                container.appendChild(standaloneDiv);
+            }
         }
 
         // --- Add Vendor Modal ---
         async function openAddVendorModal(rowId) {
+            // แปลง array ของ Vendor ให้เป็น object สำหรับ SweetAlert2 options
+            const vendorOptions = {};
+            vendorsDB.forEach(v => {
+                vendorOptions[v] = v;
+            });
+
             const { value: vendorName } = await Swal.fire({
-                title: 'เพิ่ม Vendor',
-                input: 'text',
-                inputLabel: 'ระบุชื่อ Vendor สำหรับสินค้านี้',
-                inputPlaceholder: 'พิมพ์ชื่อ Vendor...',
+                title: 'เลือก Vendor',
+                input: 'select',
+                inputOptions: vendorOptions,
+                inputPlaceholder: '-- เลือก Vendor --',
                 showCancelButton: true,
                 confirmButtonText: 'บันทึก',
                 cancelButtonText: 'ยกเลิก',
                 confirmButtonColor: '#1e293b',
-                confirmButtonColor: '#3b82f6',
                 inputValidator: (value) => {
                     if (!value) {
-                        return 'กรุณาระบุชื่อ Vendor!'
+                        return 'กรุณาเลือก Vendor!'
                     }
                 }
             });
