@@ -611,6 +611,31 @@
             }
         }
 
+        // --- ฟังก์ชันจัดกลุ่ม (รวมจำนวน) สินค้าที่เหมือนกัน ---
+        function aggregateItems(items) {
+            const aggregated = {};
+            items.forEach(c => {
+                // สร้าง Key สำหรับจัดกลุ่ม: ถ้า SKU, สถานะ, สาเหตุ, คลังสินค้า เหมือนกัน จะรวมเป็นใบเดียว
+                const key = `${c.sku}_${c.status}_${c.cause}_${c.warehouse}`;
+                if (!aggregated[key]) {
+                    aggregated[key] = {
+                        ...c,
+                        rowIds: [c.rowId], // เก็บ rowIds เป็น Array สำหรับใช้อ้างอิงการลบ/แก้ไข
+                        totalQty: Number(c.qty) // รวมจำนวน
+                    };
+                } else {
+                    aggregated[key].rowIds.push(c.rowId);
+                    aggregated[key].totalQty += Number(c.qty);
+                    // หากมีรูปภาพจากรายการใดรายการหนึ่ง ให้นำมาใช้แสดงผล
+                    if (c.imageUrl && c.imageUrl.trim() !== '') {
+                        aggregated[key].imageUrl = c.imageUrl;
+                    }
+                }
+            });
+            // แปลงกลับเป็น Array แล้วเรียงลำดับตาม RowId ล่าสุด
+            return Object.values(aggregated).sort((a, b) => Math.max(...b.rowIds) - Math.max(...a.rowIds));
+        }
+
         // --- Render Manage Section ---
         function renderClaims() {
             const container = document.getElementById('claimsContainer');
@@ -661,24 +686,30 @@
                     }
                 }
 
+                const rowIdsArg = `[${c.rowIds.join(',')}]`;
+                const mergedBadge = c.rowIds.length > 1 ? `<span class="text-[10px] text-indigo-500 bg-indigo-50 px-1.5 py-0.5 rounded-md ml-1 font-medium whitespace-nowrap">รวม ${c.rowIds.length} บิล</span>` : '';
+
                 return `
                     <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 relative hover:shadow-md transition-shadow">
                         <div class="flex justify-between items-start mb-4 gap-3">
-                            <h4 class="font-bold text-slate-800 text-sm leading-snug flex-1">${c.itemName}</h4>
-                            <div class="flex items-center gap-2">
-                                <button onclick="openEditClaimModal(${c.rowId})" class="text-slate-400 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 w-7 h-7 rounded-lg flex items-center justify-center transition-colors" title="แก้ไขรายการ">
+                            <h4 class="font-bold text-slate-800 text-sm leading-snug flex-1">${c.itemName} ${mergedBadge}</h4>
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="openEditClaimModal(${rowIdsArg})" class="text-slate-400 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 w-7 h-7 rounded-lg flex items-center justify-center transition-colors" title="แก้ไขรายการ">
                                     <i class="fa-solid fa-pen text-xs"></i>
                                 </button>
-                                <span class="px-2.5 py-1 rounded-lg border text-[10px] font-bold whitespace-nowrap ${statusColor}">${c.status}</span>
+                                <button onclick="deleteClaim(${rowIdsArg})" class="text-slate-400 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 w-7 h-7 rounded-lg flex items-center justify-center transition-colors" title="ลบรายการนี้">
+                                    <i class="fa-solid fa-trash text-xs"></i>
+                                </button>
+                                <span class="px-2.5 py-1 rounded-lg border text-[10px] font-bold whitespace-nowrap ${statusColor} ml-1">${c.status}</span>
                             </div>
                         </div>
                         <div class="bg-slate-50 p-3.5 rounded-2xl grid grid-cols-2 gap-y-2.5 text-[11px] text-slate-500 mb-4 font-medium">
                             <p class="flex items-center"><span class="text-slate-400 w-5"><i class="fa-solid fa-barcode"></i></span> ${c.sku}</p>
-                            <p class="flex items-center"><span class="text-slate-400 w-5"><i class="fa-solid fa-cubes"></i></span> ${c.qty} ${c.unit}</p>
+                            <p class="flex items-center text-[12px]"><span class="text-slate-400 w-5"><i class="fa-solid fa-cubes"></i></span> <span class="font-bold text-slate-800">${c.totalQty}</span> <span class="ml-1">${c.unit}</span></p>
                             <p class="col-span-2 flex items-center text-rose-500"><span class="w-5"><i class="fa-solid fa-triangle-exclamation"></i></span> <span>${c.cause} <span class="text-slate-400 ml-1 font-normal">(${c.warehouse})</span></span></p>
                             ${imageBtnHtml}
                         </div>
-                        <button onclick="openUpdateModal(${c.rowId}, '${c.status}')" class="w-full py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm flex justify-center items-center">
+                        <button onclick="openUpdateModal(${rowIdsArg}, '${c.status}')" class="w-full py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm flex justify-center items-center">
                             <i class="fa-solid fa-pen-to-square mr-2 text-slate-400"></i> อัพเดทสถานะ
                         </button>
                     </div>
@@ -688,11 +719,15 @@
             // แสดงผลกลุ่มที่มี Vendor
             Object.keys(groupedByVendor).forEach(vendor => {
                 const items = groupedByVendor[vendor];
+                const aggItems = aggregateItems(items); // รวมยอดก่อนแสดงผล
+                
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'mb-6';
                 
                 const vendorArg = JSON.stringify(vendor).replace(/'/g, "&apos;");
-                const rowIdsArg = `[${items.map(c => c.rowId).join(',')}]`;
+                // เอา rowId ทุกตัวในกลุ่มส่งไปให้อัพเดทสถานะทั้งบิล
+                const allRowIds = items.map(c => c.rowId);
+                const rowIdsArg = `[${allRowIds.join(',')}]`;
                 
                 groupDiv.innerHTML = `
                     <div class="flex items-center mb-3 px-1">
@@ -700,13 +735,13 @@
                             <i class="fa-solid fa-building text-sm"></i>
                         </div>
                         <h3 class="font-bold text-slate-800 text-sm truncate max-w-[150px]">${vendor}</h3>
-                        <span class="ml-2 bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-lg">${items.length} รายการ</span>
+                        <span class="ml-2 bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-lg">${allRowIds.length} รายการ</span>
                         <button onclick='openGroupUpdateModal(${vendorArg}, ${rowIdsArg})' class="ml-auto bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors shadow-sm flex items-center border border-indigo-100">
                             <i class="fa-solid fa-pen-to-square mr-1.5"></i> อัพเดททั้งบิล
                         </button>
                     </div>
                     <div class="space-y-4 pl-4 border-l-2 border-indigo-100 ml-4">
-                        ${items.map(c => createCardHTML(c, true)).join('')}
+                        ${aggItems.map(c => createCardHTML(c, true)).join('')}
                     </div>
                 `;
                 container.appendChild(groupDiv);
@@ -715,11 +750,14 @@
             // แสดงผลรายการที่ไม่มี Vendor (จัดกลุ่มตามชื่อสินค้า)
             Object.keys(groupedByItem).forEach(itemName => {
                 const items = groupedByItem[itemName];
+                const aggItems = aggregateItems(items); // รวมยอดก่อนแสดงผล
+                
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'mb-6 mt-6';
                 
                 const itemArg = JSON.stringify(itemName).replace(/'/g, "&apos;");
-                const rowIdsArg = `[${items.map(c => c.rowId).join(',')}]`;
+                const allRowIds = items.map(c => c.rowId);
+                const rowIdsArg = `[${allRowIds.join(',')}]`;
 
                 groupDiv.innerHTML = `
                     <div class="flex items-center mb-3 px-1">
@@ -730,17 +768,54 @@
                             <h3 class="font-bold text-slate-800 text-sm truncate max-w-[140px]">${itemName}</h3>
                             <p class="text-[10px] text-slate-500 font-medium">รอเพิ่ม Vendor</p>
                         </div>
-                        <span class="ml-2 bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-lg mr-2">${items.length} รายการ</span>
+                        <span class="ml-2 bg-slate-200 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-lg mr-2">${allRowIds.length} รายการ</span>
                         <button onclick='openGroupAddVendorModal(${itemArg}, ${rowIdsArg})' class="bg-slate-800 text-white hover:bg-slate-700 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-colors shadow-sm flex items-center whitespace-nowrap">
                             <i class="fa-solid fa-plus mr-1.5"></i> Vendor ทั้งบิล
                         </button>
                     </div>
                     <div class="space-y-4 pl-4 border-l-2 border-rose-100 ml-4">
-                        ${items.map(c => createCardHTML(c, false)).join('')}
+                        ${aggItems.map(c => createCardHTML(c, false)).join('')}
                     </div>
                 `;
                 container.appendChild(groupDiv);
             });
+        }
+
+        // --- ลบรายการเคลม (Delete Claim) ---
+        async function deleteClaim(rowIds) {
+            const { isConfirmed } = await Swal.fire({
+                title: 'ยืนยันการลบ?',
+                text: "คุณต้องการลบรายการนี้ใช่หรือไม่ ข้อมูลจะหายไปถาวร",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#1e293b',
+                confirmButtonText: 'ลบทิ้ง',
+                cancelButtonText: 'ยกเลิก'
+            });
+
+            if (isConfirmed) {
+                Swal.fire({ title: 'กำลังลบ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                try {
+                    if(SCRIPT_URL !== '') {
+                        for (let id of rowIds) {
+                            await fetch(SCRIPT_URL, {
+                                method: 'POST',
+                                body: JSON.stringify({ action: 'deleteClaim', rowId: id })
+                            });
+                        }
+                    }
+                    
+                    // ลบข้อมูลออกจากฐานข้อมูลจำลอง (เพื่ออัปเดตหน้าจอทันที)
+                    claimsDB = claimsDB.filter(c => !rowIds.includes(c.rowId));
+                    
+                    sendAppLog('Delete Claim', `ลบรายการเคลม จำนวน ${rowIds.length} แถว (RowID: ${rowIds.join(',')})`);
+                    Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', timer: 1500, showConfirmButton: false });
+                    renderClaims();
+                } catch (err) {
+                    Swal.fire({ icon: 'error', title: 'ลบล้มเหลว', text: err.message });
+                }
+            }
         }
 
         // --- Group Add Vendor Modal (เพิ่ม Vendor ให้สินค้าเดียวกันทั้งหมดในทีเดียว) ---
@@ -846,9 +921,16 @@
         }
 
         // --- Edit Claim Modal (แก้ไขรายการที่บันทึกผิด) ---
-        async function openEditClaimModal(rowId) {
-            const claim = claimsDB.find(c => c.rowId === rowId);
+        async function openEditClaimModal(rowIds) {
+            // ดึงข้อมูลแถวแรกมาเป็นต้นแบบ
+            const claim = claimsDB.find(c => c.rowId === rowIds[0]);
             if (!claim) return;
+
+            // รวมจำนวน (กรณีมีการรวมบิล)
+            const totalQty = rowIds.reduce((sum, id) => {
+                const item = claimsDB.find(c => c.rowId === id);
+                return sum + (item ? Number(item.qty) : 0);
+            }, 0);
 
             const warehouses = ['W1', 'W2', 'W3', 'W4', 'W5', 'C1', 'C2'];
             const causes = ['สินค้าเสียหาย', 'สินค้าหมดอายุ', 'สินค้าใกล้หมดอายุ'];
@@ -860,9 +942,10 @@
                 title: 'แก้ไขข้อมูลรายการ',
                 html: `
                     <div class="text-left mt-2 space-y-4">
+                        ${rowIds.length > 1 ? `<div class="bg-amber-50 text-amber-600 text-[10px] p-2 rounded-lg font-medium border border-amber-100"><i class="fa-solid fa-circle-info mr-1"></i> มีการรวมยอดจาก ${rowIds.length} รายการ การแก้ไขจะถูกบันทึกรวบเป็นแถวเดียว</div>` : ''}
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">จำนวน</label>
-                            <input type="number" id="edit-qty" value="${claim.qty}" min="1" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">จำนวนรวม</label>
+                            <input type="number" id="edit-qty" value="${totalQty}" min="1" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm font-bold text-slate-800">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">วันที่เกิดเหตุ (วว/ดด/ปป)</label>
@@ -909,11 +992,12 @@
                     if(formattedDate.includes('/')) { formattedDate = parseDate(formattedDate); }
 
                     if(SCRIPT_URL !== '') {
+                        // อัปเดตแถวแรกให้เป็นจำนวนรวมใหม่
                         await fetch(SCRIPT_URL, {
                             method: 'POST',
                             body: JSON.stringify({
                                 action: 'editClaim',
-                                rowId: rowId,
+                                rowId: rowIds[0],
                                 qty: formValues.qty,
                                 incidentDate: formattedDate,
                                 cause: formValues.cause,
@@ -921,16 +1005,29 @@
                                 note: formValues.note
                             })
                         });
+
+                        // หากมีการรวมบิล ให้เคลียร์แถวอื่นๆ ทิ้งจาก Database เพื่อกันซ้ำซ้อน
+                        for (let i = 1; i < rowIds.length; i++) {
+                            await fetch(SCRIPT_URL, {
+                                method: 'POST',
+                                body: JSON.stringify({ action: 'deleteClaim', rowId: rowIds[i] })
+                            });
+                        }
                     }
 
-                    // Update local DB
+                    // Update local DB (อัปเดตตัวแรก ลบตัวที่เหลือ)
                     claim.qty = formValues.qty;
                     claim.incidentDate = formattedDate;
                     claim.cause = formValues.cause;
                     claim.warehouse = formValues.warehouse;
                     claim.note = formValues.note;
 
-                    sendAppLog('Edit Claim', `แก้ไขข้อมูลรายการที่ ${rowId}`);
+                    if (rowIds.length > 1) {
+                        const idsToRemove = rowIds.slice(1);
+                        claimsDB = claimsDB.filter(c => !idsToRemove.includes(c.rowId));
+                    }
+
+                    sendAppLog('Edit Claim', `แก้ไขข้อมูลและรวมบิลสำหรับ RowID: ${rowIds[0]}`);
                     Swal.fire({ icon: 'success', title: 'แก้ไขสำเร็จ', timer: 1500, showConfirmButton: false });
                     renderClaims();
                 } catch (err) {
@@ -940,7 +1037,7 @@
         }
 
         // --- Update Status Modal ---
-        async function openUpdateModal(rowId, currentStatus) {
+        async function openUpdateModal(rowIds, currentStatus) {
             const { value: formValues } = await Swal.fire({
                 title: 'จัดการสถานะ',
                 html: `
@@ -998,23 +1095,25 @@
 
                 try {
                     if(SCRIPT_URL !== '') {
-                        await fetch(SCRIPT_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                action: 'updateStatus',
-                                rowId: rowId,
-                                status: formValues.status,
-                                returnDate: formattedReturnDate
-                            })
-                        });
+                        for (let id of rowIds) {
+                            await fetch(SCRIPT_URL, {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    action: 'updateStatus',
+                                    rowId: id,
+                                    status: formValues.status,
+                                    returnDate: formattedReturnDate
+                                })
+                            });
+                        }
                     }
                     
-                    const itemIndex = claimsDB.findIndex(c => c.rowId === rowId);
-                    if(itemIndex > -1) {
-                        claimsDB[itemIndex].status = formValues.status;
-                    }
+                    rowIds.forEach(id => {
+                        const itemIndex = claimsDB.findIndex(c => c.rowId === id);
+                        if(itemIndex > -1) claimsDB[itemIndex].status = formValues.status;
+                    });
 
-                    sendAppLog('Update Status', `เปลี่ยนสถานะรายการที่ ${rowId} เป็น "${formValues.status}"`);
+                    sendAppLog('Update Status', `เปลี่ยนสถานะรายการ (RowIDs: ${rowIds.join(',')}) เป็น "${formValues.status}"`);
 
                     Swal.fire({ icon: 'success', title: 'อัพเดทสถานะสำเร็จ', timer: 1500, showConfirmButton: false });
                     renderClaims();
