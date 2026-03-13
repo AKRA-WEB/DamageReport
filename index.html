@@ -130,6 +130,14 @@
                     <textarea id="note" rows="2" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)..."></textarea>
                 </div>
 
+                <!-- แนบรูปภาพ (ไม่บังคับ) -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1 flex items-center">
+                        <i class="fa-solid fa-camera mr-1.5"></i> แนบรูปภาพ <span class="text-slate-300 ml-1 font-normal lowercase">(ไม่บังคับ)</span>
+                    </label>
+                    <input type="file" id="imageInput" accept="image/*" capture="environment" class="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all border border-slate-200 rounded-2xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
                 <!-- ปุ่มเพิ่มรายการ -->
                 <button type="submit" id="addBtn" class="w-full bg-slate-900 text-white font-semibold py-4 rounded-2xl hover:bg-slate-800 hover:-translate-y-0.5 transition-all shadow-lg shadow-slate-900/20 mt-2 flex justify-center items-center">
                     <i class="fa-solid fa-plus mr-2"></i> เพิ่มเข้ารายการ
@@ -243,8 +251,6 @@
         // ==================================================
 
         // =================ตั้งค่า URL ของ Google Apps Script=================
-        // เอา URL ที่ได้จากขั้นตอนที่ 8 มาวางในเครื่องหมายคำพูดด้านล่างนี้
-        // ตัวอย่าง: const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby.../exec';
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyONQg4PVcPewaqRoFcrYnFh_VAwulN_1pGBSY1JEuVo2e7eyuSoGFSfYf7MqqFA4nM/exec'; 
         // ===============================================================
 
@@ -260,9 +266,9 @@
         let vendorsDB = ['Dairy Hub', 'Bakery Co.', 'Juice Fresh', 'Farm Fresh', 'Sea Food Ltd.']; // เพิ่มฐานข้อมูลจำลองสำหรับ Vendor
 
         let claimsDB = [
-            { rowId: 2, itemName: 'นมสดพาสเจอร์ไรส์ 2L', sku: 'P001', vendor: 'Dairy Hub', qty: 5, unit: 'แกลลอน', warehouse: 'W1', cause: 'สินค้าหมดอายุ', status: 'รอเคลม' },
-            { rowId: 3, itemName: 'ไข่ไก่ เบอร์ 0', sku: 'P004', vendor: 'Farm Fresh', qty: 2, unit: 'แผง', warehouse: 'C1', cause: 'สินค้าเสียหาย', status: 'แจ้งเคลมแล้ว' },
-            { rowId: 4, itemName: 'น้ำดื่มบรรจุขวด', sku: 'P006', vendor: '', qty: 10, unit: 'แพ็ค', warehouse: 'W2', cause: 'สินค้าเสียหาย', status: 'รอเคลม' } // เพิ่มข้อมูลจำลองกรณีไม่มี Vendor
+            { rowId: 2, itemName: 'นมสดพาสเจอร์ไรส์ 2L', sku: 'P001', vendor: 'Dairy Hub', qty: 5, unit: 'แกลลอน', warehouse: 'W1', cause: 'สินค้าหมดอายุ', status: 'รอเคลม', imageUrl: '' },
+            { rowId: 3, itemName: 'ไข่ไก่ เบอร์ 0', sku: 'P004', vendor: 'Farm Fresh', qty: 2, unit: 'แผง', warehouse: 'C1', cause: 'สินค้าเสียหาย', status: 'แจ้งเคลมแล้ว', imageUrl: 'https://via.placeholder.com/150' },
+            { rowId: 4, itemName: 'น้ำดื่มบรรจุขวด', sku: 'P006', vendor: '', qty: 10, unit: 'แพ็ค', warehouse: 'W2', cause: 'สินค้าเสียหาย', status: 'รอเคลม', imageUrl: '' } // เพิ่มข้อมูลจำลองกรณีไม่มี Vendor
         ];
 
         let selectedProduct = null;
@@ -406,8 +412,49 @@
             return dateStr;
         }
 
-        // --- Form Submission (เปลี่ยนเป็นการเพิ่มลงรายการชั่วคราว) ---
-        document.getElementById('claimForm').addEventListener('submit', function(e) {
+        // --- Image Compression (ลดขนาดรูปก่อนส่ง) ---
+        function compressImage(file, maxWidth, maxHeight, quality) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function (event) {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = function () {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height *= maxWidth / width;
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width *= maxHeight / height;
+                                height = maxHeight;
+                            }
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        resolve({
+                            base64: dataUrl.split(',')[1],
+                            mimeType: 'image/jpeg'
+                        });
+                    };
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // --- Form Submission (เพิ่มลงรายการชั่วคราว + ย่อรูป) ---
+        document.getElementById('claimForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             if (!selectedProduct) {
@@ -417,6 +464,27 @@
 
             const rawDate = document.getElementById('incidentDate').value;
             const formattedDate = parseDate(rawDate);
+
+            // จัดการรูปภาพ (ถ้ามี)
+            const fileInput = document.getElementById('imageInput');
+            let imageBase64 = "";
+            let mimeType = "";
+            let hasImage = false;
+
+            if (fileInput.files.length > 0) {
+                Swal.fire({ title: 'กำลังประมวลผลรูปภาพ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                try {
+                    // ย่อขนาดรูปภาพเพื่อไม่ให้ไฟล์หนักเกินไปตอนส่ง API
+                    const compressed = await compressImage(fileInput.files[0], 1024, 1024, 0.7);
+                    imageBase64 = compressed.base64;
+                    mimeType = compressed.mimeType;
+                    hasImage = true;
+                    Swal.close();
+                } catch (err) {
+                    Swal.fire({ icon: 'error', title: 'ข้อผิดพลาด', text: 'ไม่สามารถประมวลผลรูปภาพได้' });
+                    return;
+                }
+            }
 
             const payload = {
                 id: Date.now(), // สร้าง ID ชั่วคราวสำหรับการลบ
@@ -430,19 +498,23 @@
                 cause: document.getElementById('cause').value,
                 warehouse: document.getElementById('warehouse').value,
                 empName: document.getElementById('empName').value,
-                note: document.getElementById('note').value
+                note: document.getElementById('note').value,
+                imageBase64: imageBase64,
+                mimeType: mimeType,
+                hasImage: hasImage
             };
 
             // เพิ่มลงอาเรย์และแสดงผล
             draftItems.push(payload);
             renderDrafts();
 
-            // เคลียร์เฉพาะฟิลด์สินค้า (คงข้อมูล คลังสินค้า และ ชื่อพนักงาน ไว้เพื่อความไวในการคีย์)
+            // เคลียร์เฉพาะฟิลด์สินค้า และ รูปภาพ
             document.getElementById('searchInput').value = '';
             document.getElementById('qty').value = '';
             document.getElementById('incidentDate').value = '';
             document.getElementById('cause').value = '';
             document.getElementById('note').value = '';
+            document.getElementById('imageInput').value = '';
             
             selectedProduct = null;
             document.getElementById('autoDataDisplay').classList.add('hidden');
@@ -472,9 +544,10 @@
                 div.innerHTML = `
                     <div class="pr-10 w-full">
                         <p class="font-bold text-sm text-slate-800 line-clamp-1">${item.itemName}</p>
-                        <p class="text-[11px] font-medium text-slate-500 mt-1.5 flex items-center gap-2">
-                            <span class="bg-slate-100 px-2 py-0.5 rounded-md text-slate-600">${item.qty} ${item.unit}</span>
-                            <span class="bg-rose-50 text-rose-600 px-2 py-0.5 rounded-md">${item.cause}</span>
+                        <p class="text-[11px] font-medium text-slate-500 mt-1.5 flex items-center gap-2 flex-wrap">
+                            <span class="bg-slate-100 px-2 py-0.5 rounded-md text-slate-600 mb-1">${item.qty} ${item.unit}</span>
+                            <span class="bg-rose-50 text-rose-600 px-2 py-0.5 rounded-md mb-1">${item.cause}</span>
+                            ${item.hasImage ? '<span class="bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-md flex items-center mb-1"><i class="fa-solid fa-image mr-1"></i> มีรูป</span>' : ''}
                         </p>
                     </div>
                     <button type="button" onclick="removeDraft(${item.id})" class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-slate-50 text-slate-400 hover:text-rose-500 hover:bg-rose-50 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
@@ -504,7 +577,7 @@
                 // แสดง Popup โหลดพร้อมเปอร์เซ็นต์
                 Swal.fire({
                     title: 'กำลังส่งข้อมูล...',
-                    html: `กำลังบันทึก <b>0</b> / ${draftItems.length} รายการ`,
+                    html: `กำลังบันทึก <b>0</b> / ${draftItems.length} รายการ <br><span class="text-xs text-slate-400">(หากมีรูปภาพอาจใช้เวลาสักครู่)</span>`,
                     allowOutsideClick: false,
                     didOpen: () => { Swal.showLoading() }
                 });
@@ -515,6 +588,7 @@
                         const item = draftItems[i];
                         const payload = { ...item };
                         delete payload.id; // ลบ id ชั่วคราวออกก่อนส่ง
+                        delete payload.hasImage; // ไม่ต้องส่งตัวแปรเช็คไปให้หนัก
                         
                         await fetch(SCRIPT_URL, {
                             method: 'POST',
@@ -522,7 +596,7 @@
                         });
                         
                         successCount++;
-                        Swal.update({ html: `กำลังบันทึก <b>${successCount}</b> / ${draftItems.length} รายการ` });
+                        Swal.update({ html: `กำลังบันทึก <b>${successCount}</b> / ${draftItems.length} รายการ <br><span class="text-xs text-slate-400">(หากมีรูปภาพอาจใช้เวลาสักครู่)</span>` });
                     }
                 } else {
                     // แบบจำลอง (Mock) เมื่อยังไม่มี SCRIPT_URL
@@ -530,6 +604,7 @@
                         await new Promise(r => setTimeout(r, 600)); // ดีเลย์จำลองการโหลด
                         const payload = { ...draftItems[i], rowId: Date.now() + i, status: 'รอเคลม' };
                         delete payload.id;
+                        delete payload.hasImage;
                         claimsDB.push(payload);
                         successCount++;
                         Swal.update({ html: `กำลังบันทึก <b>${successCount}</b> / ${draftItems.length} รายการ` });
@@ -604,6 +679,12 @@
                     vendorHtml = `<p class="col-span-2 flex items-center"><span class="text-slate-400 w-5"><i class="fa-solid fa-box"></i></span> <span class="font-medium text-slate-600 truncate">${c.itemName}</span> <button onclick="openAddVendorModal(${c.rowId})" class="ml-auto px-2 py-1 bg-slate-800 text-white rounded-lg text-[10px] font-medium hover:bg-slate-700 transition-colors shadow-sm"><i class="fa-solid fa-plus"></i> Vendor</button></p>`;
                 }
 
+                // ปุ่มดูรูปภาพ (แสดงก็ต่อเมื่อมีลิงก์รูป)
+                let imageBtnHtml = '';
+                if (c.imageUrl && c.imageUrl.trim() !== '') {
+                    imageBtnHtml = `<button onclick="window.open('${c.imageUrl}', '_blank')" class="col-span-2 mt-1 px-3 py-2 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl text-xs font-semibold hover:bg-indigo-100 transition-colors shadow-sm flex items-center justify-center"><i class="fa-solid fa-image mr-1.5"></i> ดูรูปภาพแนบ</button>`;
+                }
+
                 return `
                     <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 relative hover:shadow-md transition-shadow">
                         <div class="flex justify-between items-start mb-4">
@@ -615,6 +696,7 @@
                             <p class="flex items-center"><span class="text-slate-400 w-5"><i class="fa-solid fa-cubes"></i></span> ${c.qty} ${c.unit}</p>
                             ${vendorHtml}
                             <p class="col-span-2 flex items-center text-rose-500"><span class="w-5"><i class="fa-solid fa-triangle-exclamation"></i></span> <span>${c.cause} <span class="text-slate-400 ml-1 font-normal">(${c.warehouse})</span></span></p>
+                            ${imageBtnHtml}
                         </div>
                         <button onclick="openUpdateModal(${c.rowId}, '${c.status}')" class="w-full py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm flex justify-center items-center">
                             <i class="fa-solid fa-pen-to-square mr-2 text-slate-400"></i> อัพเดทสถานะ
