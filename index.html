@@ -679,10 +679,16 @@
                     vendorHtml = `<p class="col-span-2 flex items-center"><span class="text-slate-400 w-5"><i class="fa-solid fa-box"></i></span> <span class="font-medium text-slate-600 truncate">${c.itemName}</span> <button onclick="openAddVendorModal(${c.rowId})" class="ml-auto px-2 py-1 bg-slate-800 text-white rounded-lg text-[10px] font-medium hover:bg-slate-700 transition-colors shadow-sm"><i class="fa-solid fa-plus"></i> Vendor</button></p>`;
                 }
 
-                // ปุ่มดูรูปภาพ (แสดงก็ต่อเมื่อมีลิงก์รูป)
+                // ปุ่มดูรูปภาพ (เช็คว่าเป็นลิงก์จริงหรือไม่ เพื่อป้องกันหน้า 404)
                 let imageBtnHtml = '';
                 if (c.imageUrl && c.imageUrl.trim() !== '') {
-                    imageBtnHtml = `<button onclick="window.open('${c.imageUrl}', '_blank')" class="col-span-2 mt-1 px-3 py-2 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl text-xs font-semibold hover:bg-indigo-100 transition-colors shadow-sm flex items-center justify-center"><i class="fa-solid fa-image mr-1.5"></i> ดูรูปภาพแนบ</button>`;
+                    if (c.imageUrl.startsWith('http')) {
+                        // ถ้าเป็นลิงก์เว็บปกติ ให้แสดงปุ่มกดดูรูป
+                        imageBtnHtml = `<button onclick="window.open('${c.imageUrl}', '_blank')" class="col-span-2 mt-1 px-3 py-2 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl text-xs font-semibold hover:bg-indigo-100 transition-colors shadow-sm flex items-center justify-center"><i class="fa-solid fa-image mr-1.5"></i> ดูรูปภาพแนบ</button>`;
+                    } else {
+                        // ถ้าบันทึกรูปไม่สำเร็จ (ข้อมูลเป็น Error Saving Image) ให้โชว์แจ้งเตือน
+                        imageBtnHtml = `<div class="col-span-2 mt-1 px-3 py-2 bg-rose-50 text-rose-500 border border-rose-100 rounded-xl text-xs font-semibold flex items-center justify-center"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> รูปภาพไม่ถูกบันทึก (ติดสิทธิ์ Drive)</div>`;
+                    }
                 }
 
                 return `
