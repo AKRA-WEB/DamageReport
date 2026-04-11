@@ -593,16 +593,27 @@
             finally { btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> ส่งข้อมูลทั้งหมดเข้าสู่ระบบ'; btn.disabled = false; }
         }
 
-        // --- แก้ไขให้ลิงก์ Google Drive แสดงเป็นรูปภาพได้ ---
+        // --- แก้ไขให้ลิงก์ Google Drive แสดงผลได้ผ่าน Iframe Preview ---
         function viewImage(url) { 
-            let imgUrl = url;
             if (url.includes('drive.google.com')) {
                 const match = url.match(/[-\w]{25,}/);
                 if (match && match[0]) {
-                    imgUrl = `https://drive.google.com/uc?id=${match[0]}`; 
+                    const fileId = match[0];
+                    Swal.fire({ 
+                        html: `<iframe src="https://drive.google.com/file/d/${fileId}/preview" width="100%" height="450px" style="border:none; border-radius: 12px; background-color: #f8fafc;"></iframe>`, 
+                        showConfirmButton: true, 
+                        confirmButtonText: 'ปิดหน้าต่าง', 
+                        confirmButtonColor: '#1e293b', 
+                        width: '95%',
+                        padding: '1em',
+                        customClass: { popup: 'rounded-[2rem]' } 
+                    }); 
+                    return;
                 }
             }
-            Swal.fire({ imageUrl: imgUrl, imageAlt: 'รูปภาพประกอบ', showConfirmButton: true, confirmButtonText: 'ปิดรูปภาพ', confirmButtonColor: '#1e293b', customClass: { popup: 'rounded-3xl', image: 'rounded-xl mb-0 mt-4 max-h-[60vh] object-contain' } }); 
+            
+            // กรณีเป็นลิงก์รูปภาพปกติจากที่อื่น (ไม่ใช่ Google Drive)
+            Swal.fire({ imageUrl: url, imageAlt: 'รูปภาพประกอบ', showConfirmButton: true, confirmButtonText: 'ปิดรูปภาพ', confirmButtonColor: '#1e293b', customClass: { popup: 'rounded-3xl', image: 'rounded-xl mb-0 mt-4 max-h-[60vh] object-contain' } }); 
         }
 
 
