@@ -89,37 +89,46 @@
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">สาเหตุ <span class="text-rose-500">*</span></label>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">ต้นเหตุเกิดจาก <span class="text-rose-500">*</span></label>
                     <select id="cause" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm appearance-none">
-                        <option value="">-- เลือกสาเหตุ --</option>
-                        <option value="บรรจุภัณฑ์รั่วซึม/แตก [จากขนส่ง]">บรรจุภัณฑ์รั่วซึม/แตก [จากขนส่ง]</option>
-                        <option value="หมดอายุ">หมดอายุ</option>
-                        <option value="วัตถุดิบเปลี่ยนสภาพ">วัตถุดิบเปลี่ยนสภาพ</option>
-                        <option value="เสียหายจากการจัดเก็บ (หนูกัด/โดนน้ำ)">เสียหายจากการจัดเก็บ (หนูกัด/โดนน้ำ)</option>
-                        <option value="ความผิดพลาดจากการขนย้าย">ความผิดพลาดจากการขนย้าย</option>
+                        <option value="">-- เลือกต้นเหตุ --</option>
+                        <option value="ขนส่ง (Vendor)">ขนส่ง (Vendor)</option>
+                        <option value="โรงงานผลิตสินค้า">โรงงานผลิตสินค้า</option>
+                        <option value="พนักงานภายใน">พนักงานภายใน</option>
+                        <option value="ลูกค้านำมาคืน">ลูกค้านำมาคืน</option>
+                        <option value="อื่นๆ">อื่นๆ</option>
                     </select>
                 </div>
 
                 <div id="causePersonDiv" style="display: none;">
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">ระบุชื่อคนทำ <span class="text-rose-500">*</span></label>
-                    <input type="text" id="causePerson" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm font-medium" placeholder="ชื่อพนักงานที่ทำเสียหาย...">
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">ระบุพนักงานที่เกี่ยวข้อง <span class="text-rose-500">*</span></label>
+                    <input type="text" id="causePerson" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm font-medium" placeholder="ชื่อพนักงาน...">
+                </div>
+
+                <div id="causeCustomerDiv" style="display: none;" class="space-y-4 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">ประเภทการคืน <span class="text-rose-500">*</span></label>
+                        <select id="causeCustomerType" class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-800 outline-none text-sm appearance-none">
+                            <option value="">-- เลือกประเภท --</option>
+                            <option value="ความผิดลูกค้า">ความผิดลูกค้า</option>
+                            <option value="ความผิดร้าน">ความผิดร้าน</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">ระบุชื่อลูกค้า / พนักงานที่เกี่ยวข้อง <span class="text-rose-500">*</span></label>
+                        <input type="text" id="causeCustomerPerson" class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-800 outline-none text-sm" placeholder="ชื่อ...">
+                    </div>
+                </div>
+
+                <div id="causeOtherDiv" style="display: none;">
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">ระบุสาเหตุอื่นๆ <span class="text-rose-500">*</span></label>
+                    <input type="text" id="causeOtherText" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm font-medium" placeholder="ระบุรายละเอียด...">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">คลังสินค้า/แหล่งพบ <span class="text-rose-500">*</span></label>
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">ระบุคลังที่พบปัญหา <span class="text-rose-500">*</span></label>
                     <select id="warehouse" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm appearance-none">
-                        <option value="">-- เลือกแหล่งที่พบ --</option>
-                        <option value="เจอเองภายในคลัง">เจอเองภายในคลัง</option>
-                        <option value="เจอเองหน้าร้าน(เรียงขึ้นเชลฟ์/เจอในเชลฟ์)">เจอเองหน้าร้าน(เรียงขึ้นเชลฟ์/เจอในเชลฟ์)</option>
-                        <option value="ลูกค้าส่งกลับมาเปลี่ยน/คืน [ความผิดลูกค้า]">ลูกค้าส่งกลับมาเปลี่ยน/คืน [ความผิดลูกค้า]</option>
-                        <option value="ลูกค้าส่งกลับมาเปลี่ยน/คืน [ความร้านค้า/VD]">ลูกค้าส่งกลับมาเปลี่ยน/คืน [ความร้านค้า/VD]</option>
-                    </select>
-                </div>
-
-                <div id="subWarehouseDiv" style="display: none;">
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-1">ระบุคลัง <span class="text-rose-500">*</span></label>
-                    <select id="subWarehouse" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-slate-800 focus:border-transparent outline-none transition-all text-sm appearance-none">
-                        <option value="">-- เลือกคลัง --</option>
+                        <option value="">-- เลือกคลัง/สถานที่ --</option>
                         <option value="W1">W1</option>
                         <option value="W2">W2</option>
                         <option value="W3">W3</option>
@@ -127,6 +136,7 @@
                         <option value="W5">W5</option>
                         <option value="C1">C1</option>
                         <option value="C2">C2</option>
+                        <option value="หน้าร้าน (เชลฟ์)">หน้าร้าน (เชลฟ์)</option>
                     </select>
                 </div>
 
@@ -282,7 +292,7 @@
     <!-- Script Logic -->
     <script>
         const CURRENT_APP_NAME = "DamageReport"; 
-        const GOOGLE_APP_SCRIPT_LOG_URL = "https://script.google.com/macros/s/AKfycbyONQg4PVcPewaqRoFcrYnFh_VAwulN_1pGBSY1JEuVo2e7eyuSoGFSfYf7MqqFA4nM/exec";
+        const GOOGLE_APP_SCRIPT_LOG_URL = "https://script.google.com/macros/s/AKfycbw5PCJ1OlxCQR6zaNubrmZTgaORB-rJK2Ow5_YC3i5kKv-BrrTgJkTJyNZKrzfodK1m/exec";
         
         const urlParams = new URLSearchParams(window.location.search);
         let currentUser = urlParams.get('user');
@@ -324,21 +334,35 @@
                 productsDB = [{ sku: 'P001', name: 'น้ำส้มคั้นแท้', unit: 'ขวด', vendor: 'บริษัท A' }, { sku: 'P002', name: 'ขนมปังโฮลวีท', unit: 'ห่อ', vendor: 'บริษัท B' }];
                 vendorsDB = ['บริษัท A', 'บริษัท B', 'บริษัท C'];
                 claimsDB = [
-                    { rowId: 2, itemName: 'น้ำส้มคั้นแท้', sku: 'P001', unit: 'ขวด', vendor: 'บริษัท A', qty: 5, status: 'รอเคลม', cause: 'หมดอายุ', warehouse: 'เจอเองภายในคลัง (W1)', incidentDate: '15/04/2026', rowIds: [2], claimType: '', claimBillNo: '', claimAmount: '', returnChannel: '', whReceived: '', whLocation: '', whReceiverName: '' },
-                    { rowId: 3, itemName: 'ขนมปังโฮลวีท', sku: 'P002', unit: 'ห่อ', vendor: 'บริษัท B', qty: 10, status: 'สำเร็จแล้ว', cause: 'บรรจุภัณฑ์รั่วซึม/แตก [จากขนส่ง]', warehouse: 'เจอเองหน้าร้าน(เรียงขึ้นเชลฟ์/เจอในเชลฟ์)', incidentDate: '15/04/2026', rowIds: [3], claimType: 'คืนสินค้าหักในบิล', claimBillNo: 'B-2401', claimAmount: '120', returnChannel: 'เซลล์มารับสินค้ากลับ', whReceived: 'รับแล้ว', whLocation: 'Z-A1', whReceiverName: 'ผู้ดูแลระบบ (Dev)' },
-                    { rowId: 4, itemName: 'น้ำส้มคั้นแท้', sku: 'P001', unit: 'ขวด', vendor: 'บริษัท A', qty: 2, status: 'แจ้งเคลมแล้ว', cause: 'บรรจุภัณฑ์รั่วซึม/แตก [จากขนส่ง]', warehouse: 'W2', incidentDate: '16/04/2026', rowIds: [4], whReceived: 'รับแล้ว', whLocation: 'Z-B2' }
+                    { rowId: 2, itemName: 'น้ำส้มคั้นแท้', sku: 'P001', unit: 'ขวด', vendor: 'บริษัท A', qty: 5, status: 'รอเคลม', cause: 'พนักงานภายใน (นาย ก)', warehouse: 'W1', incidentDate: '15/04/2026', rowIds: [2], claimType: '', claimBillNo: '', claimAmount: '', returnChannel: '', whReceived: '', whLocation: '', whReceiverName: '', claimPoNo: '' },
+                    { rowId: 3, itemName: 'ขนมปังโฮลวีท', sku: 'P002', unit: 'ห่อ', vendor: 'บริษัท B', qty: 10, status: 'สำเร็จแล้ว', cause: 'ลูกค้านำมาคืน [ความผิดลูกค้า] (คุณสมชาย)', warehouse: 'หน้าร้าน (เชลฟ์)', incidentDate: '15/04/2026', rowIds: [3], claimType: 'คืนสินค้าหักในบิล', claimBillNo: 'B-2401', claimAmount: '120', returnChannel: 'ขนส่งมารับสินค้ากลับ', whReceived: 'ตีกลับขนส่ง', whLocation: '', whReceiverName: 'ผู้ดูแลระบบ (Dev)', claimPoNo: 'PO-202401' },
+                    { rowId: 4, itemName: 'น้ำส้มคั้นแท้', sku: 'P001', unit: 'ขวด', vendor: 'บริษัท A', qty: 2, status: 'แจ้งเคลมแล้ว', cause: 'ขนส่ง (Vendor)', warehouse: 'W2', incidentDate: '16/04/2026', rowIds: [4], whReceived: 'รับแล้ว', whLocation: 'Z-B2', whReceiverName: 'พนักงานคลัง' }
                 ];
                 updateViews();
             }
             setupAutocomplete();
 
             document.getElementById('cause')?.addEventListener('change', function(e) {
-                document.getElementById('causePersonDiv').style.display = (e.target.value === 'ความผิดพลาดจากการขนย้าย') ? 'block' : 'none';
-                document.getElementById('causePerson').required = (e.target.value === 'ความผิดพลาดจากการขนย้าย');
-            });
-            document.getElementById('warehouse')?.addEventListener('change', function(e) {
-                document.getElementById('subWarehouseDiv').style.display = (e.target.value === 'เจอเองภายในคลัง') ? 'block' : 'none';
-                document.getElementById('subWarehouse').required = (e.target.value === 'เจอเองภายในคลัง');
+                const val = e.target.value;
+                document.getElementById('causePersonDiv').style.display = 'none';
+                document.getElementById('causePerson').required = false;
+                document.getElementById('causeCustomerDiv').style.display = 'none';
+                document.getElementById('causeCustomerType').required = false;
+                document.getElementById('causeCustomerPerson').required = false;
+                document.getElementById('causeOtherDiv').style.display = 'none';
+                document.getElementById('causeOtherText').required = false;
+
+                if (val === 'พนักงานภายใน') {
+                    document.getElementById('causePersonDiv').style.display = 'block';
+                    document.getElementById('causePerson').required = true;
+                } else if (val === 'ลูกค้านำมาคืน') {
+                    document.getElementById('causeCustomerDiv').style.display = 'block';
+                    document.getElementById('causeCustomerType').required = true;
+                    document.getElementById('causeCustomerPerson').required = true;
+                } else if (val === 'อื่นๆ') {
+                    document.getElementById('causeOtherDiv').style.display = 'block';
+                    document.getElementById('causeOtherText').required = true;
+                }
             });
         });
 
@@ -381,25 +405,22 @@
             const total = claimsDB.length;
             if(total === 0) return;
 
-            // 1. KPI Cards
             const countWaitClaim = claimsDB.filter(c => c.status === 'รอเคลม').length;
             const countInform = claimsDB.filter(c => c.status === 'แจ้งเคลมแล้ว').length;
             const countSent = claimsDB.filter(c => c.status === 'ส่งเคลมแล้ว').length;
             const countDone = claimsDB.filter(c => c.status === 'สำเร็จแล้ว').length;
-            const countWaitWH = claimsDB.filter(c => c.whReceived !== 'รับแล้ว').length;
+            const countWaitWH = claimsDB.filter(c => (c.whReceived !== 'รับแล้ว' && c.whReceived !== 'ตีกลับขนส่ง')).length;
 
             document.getElementById('dash-total').innerText = total;
             document.getElementById('dash-wait-wh').innerText = countWaitWH;
             document.getElementById('dash-wait-claim').innerText = countWaitClaim;
             document.getElementById('dash-done').innerText = countDone;
 
-            // 2. Progress Bar
             const pWait = (countWaitClaim / total) * 100;
             const pInform = (countInform / total) * 100;
             const pSent = (countSent / total) * 100;
             const pDone = (countDone / total) * 100;
 
-            // Delay เล็กน้อยให้ CSS Transition ทำงาน
             setTimeout(() => {
                 document.getElementById('bar-wait').style.width = `${pWait}%`;
                 document.getElementById('bar-inform').style.width = `${pInform}%`;
@@ -413,10 +434,10 @@
             document.getElementById('leg-done').innerText = countDone;
             document.getElementById('dash-percent-done').innerText = `${pDone.toFixed(0)}% สำเร็จ`;
 
-            // 3. Top Causes
             const causeCounts = {};
             claimsDB.forEach(c => {
-                let pureCause = c.cause.split(' (คนทำ:')[0]; // ตัดชื่อคนทำออกเพื่อนับรวม
+                let pureCause = c.cause.split(' (')[0].split(' [')[0]; 
+                if(pureCause.startsWith('อื่นๆ:')) pureCause = 'อื่นๆ';
                 causeCounts[pureCause] = (causeCounts[pureCause] || 0) + 1;
             });
             const sortedCauses = Object.entries(causeCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
@@ -442,7 +463,6 @@
             }
         }
 
-
         // ================= SECTION 1: REPORT LOGIC =================
         function setupAutocomplete() {
             const input = document.getElementById('searchInput'); const suggList = document.getElementById('suggestions'); const autoDisplay = document.getElementById('autoDataDisplay');
@@ -465,6 +485,13 @@
                 } else { suggList.classList.add('hidden'); }
             });
             document.addEventListener('click', function(e) { if(e.target !== input) suggList.classList.add('hidden'); });
+        }
+
+        function getTodayStr() {
+            const d = new Date();
+            let year = d.getFullYear();
+            if (year >= 2500) year -= 543;
+            return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${year}`;
         }
 
         function formatDateForSave(dateStr) {
@@ -505,10 +532,19 @@
             }
 
             let finalCause = document.getElementById('cause').value;
-            if (finalCause === 'ความผิดพลาดจากการขนย้าย') { const pName = document.getElementById('causePerson').value.trim(); if (pName) finalCause = `ความผิดพลาดจากการขนย้าย (คนทำ: ${pName})`; }
+            if (finalCause === 'พนักงานภายใน') { 
+                const pName = document.getElementById('causePerson').value.trim(); 
+                if (pName) finalCause = `พนักงานภายใน (${pName})`; 
+            } else if (finalCause === 'ลูกค้านำมาคืน') {
+                const cType = document.getElementById('causeCustomerType').value;
+                const cPerson = document.getElementById('causeCustomerPerson').value.trim();
+                finalCause = `ลูกค้านำมาคืน [${cType}] (${cPerson})`;
+            } else if (finalCause === 'อื่นๆ') {
+                const otherTxt = document.getElementById('causeOtherText').value.trim();
+                finalCause = `อื่นๆ: ${otherTxt}`;
+            }
 
             let finalWarehouse = document.getElementById('warehouse').value;
-            if (finalWarehouse === 'เจอเองภายในคลัง') { const sName = document.getElementById('subWarehouse').value; if (sName) finalWarehouse = `เจอเองภายในคลัง (${sName})`; }
 
             const payload = {
                 id: Date.now(), action: 'add', itemName: selectedProduct.name, sku: selectedProduct.sku, unit: selectedProduct.unit, vendor: selectedProduct.vendor, qty: document.getElementById('qty').value, incidentDate: formattedDate,
@@ -517,7 +553,11 @@
 
             draftItems.push(payload); renderDrafts();
 
-            document.getElementById('searchInput').value = ''; document.getElementById('qty').value = ''; document.getElementById('incidentDate').value = ''; document.getElementById('cause').value = ''; document.getElementById('causePerson').value = ''; document.getElementById('causePersonDiv').style.display = 'none'; document.getElementById('warehouse').value = ''; document.getElementById('subWarehouse').value = ''; document.getElementById('subWarehouseDiv').style.display = 'none'; document.getElementById('note').value = ''; document.getElementById('imageInput').value = '';
+            document.getElementById('searchInput').value = ''; document.getElementById('qty').value = ''; document.getElementById('incidentDate').value = ''; document.getElementById('cause').value = ''; 
+            document.getElementById('causePerson').value = ''; document.getElementById('causePersonDiv').style.display = 'none'; 
+            document.getElementById('causeCustomerType').value = ''; document.getElementById('causeCustomerPerson').value = ''; document.getElementById('causeCustomerDiv').style.display = 'none';
+            document.getElementById('causeOtherText').value = ''; document.getElementById('causeOtherDiv').style.display = 'none';
+            document.getElementById('warehouse').value = ''; document.getElementById('note').value = ''; document.getElementById('imageInput').value = '';
             selectedProduct = null; document.getElementById('autoDataDisplay').classList.add('hidden');
             document.getElementById('draftSection').scrollIntoView({ behavior: 'smooth' });
         });
@@ -542,7 +582,7 @@
                 if(SCRIPT_URL !== '') {
                     for (let i = 0; i < draftItems.length; i++) {
                         const payload = { ...draftItems[i] }; delete payload.id; delete payload.hasImage; 
-                        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+                        try { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) }); } catch(e) { console.warn(e); }
                         successCount++; Swal.update({ html: `กำลังบันทึก <b>${successCount}</b> / ${draftItems.length} รายการ` });
                     }
                 }
@@ -553,7 +593,18 @@
             finally { btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> ส่งข้อมูลทั้งหมดเข้าสู่ระบบ'; btn.disabled = false; }
         }
 
-        function viewImage(url) { Swal.fire({ imageUrl: url, imageAlt: 'รูปภาพ', showConfirmButton: true, confirmButtonText: 'ปิด', confirmButtonColor: '#1e293b', customClass: { popup: 'rounded-3xl', image: 'rounded-xl mb-0 mt-4' } }); }
+        // --- แก้ไขให้ลิงก์ Google Drive แสดงเป็นรูปภาพได้ ---
+        function viewImage(url) { 
+            let imgUrl = url;
+            if (url.includes('drive.google.com')) {
+                const match = url.match(/[-\w]{25,}/);
+                if (match && match[0]) {
+                    imgUrl = `https://drive.google.com/uc?id=${match[0]}`; 
+                }
+            }
+            Swal.fire({ imageUrl: imgUrl, imageAlt: 'รูปภาพประกอบ', showConfirmButton: true, confirmButtonText: 'ปิดรูปภาพ', confirmButtonColor: '#1e293b', customClass: { popup: 'rounded-3xl', image: 'rounded-xl mb-0 mt-4 max-h-[60vh] object-contain' } }); 
+        }
+
 
         // ================= SECTION 2: HISTORY =================
         function renderHistory() {
@@ -570,14 +621,44 @@
             filtered.forEach(c => {
                 let statusColor = 'text-amber-600 bg-amber-50 border-amber-100'; if(c.status === 'แจ้งเคลมแล้ว') statusColor = 'text-sky-600 bg-sky-50 border-sky-100'; if(c.status === 'ส่งเคลมแล้ว') statusColor = 'text-indigo-600 bg-indigo-50 border-indigo-100'; if(c.status === 'สำเร็จแล้ว') statusColor = 'text-emerald-600 bg-emerald-50 border-emerald-100';
                 let imageBtnHtml = (c.imageUrl && c.imageUrl.startsWith('http')) ? `<button onclick="viewImage('${c.imageUrl}')" class="text-indigo-500 hover:text-indigo-700 text-xs ml-2" title="ดูรูปภาพ"><i class="fa-solid fa-image"></i></button>` : '';
-                let whStatusHtml = (c.whReceived === 'รับแล้ว') ? `
-                    <div class="mt-3 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-100 flex justify-between items-start">
-                        <div class="flex flex-col"><span class="flex items-center"><i class="fa-solid fa-check-circle mr-1.5"></i> คลังรับเข้าแล้ว</span><span class="text-[9px] text-emerald-500 font-medium mt-0.5 ml-4">ผู้รับ: ${c.whReceiverName || '-'}</span></div>
-                        <span class="text-emerald-500 bg-white px-1.5 py-0.5 rounded shadow-sm border border-emerald-50 mt-0.5">Loc: ${c.whLocation}</span>
-                    </div>` : `
-                    <button onclick="openWHReceiveModal(${c.rowId})" class="mt-3 w-full py-2 bg-slate-800 text-white text-[11px] font-semibold rounded-xl hover:bg-slate-700 transition-colors flex items-center justify-center shadow-sm">
-                        <i class="fa-solid fa-boxes-packing mr-1.5 text-slate-300"></i> ยืนยันรับเข้าคลังและระบุที่เก็บ
-                    </button>`;
+                
+                let whStatusHtml = '';
+                if (c.whReceived === 'รับแล้ว') {
+                    whStatusHtml = `
+                        <div class="mt-3 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-100 flex justify-between items-start">
+                            <div class="flex flex-col"><span class="flex items-center"><i class="fa-solid fa-check-circle mr-1.5"></i> คลังรับเข้าแล้ว</span><span class="text-[9px] text-emerald-500 font-medium mt-0.5 ml-4">ผู้รับ: ${c.whReceiverName || '-'}</span></div>
+                            <span class="text-emerald-500 bg-white px-1.5 py-0.5 rounded shadow-sm border border-emerald-50 mt-0.5">Loc: ${c.whLocation}</span>
+                        </div>`;
+                    
+                    // เพิ่มปุ่มส่งคืนกับขนส่ง หากยังไม่สำเร็จ
+                    if (c.status !== 'สำเร็จแล้ว') {
+                        whStatusHtml += `
+                        <button onclick="openTransportReturnModal(${c.rowId})" class="mt-2 w-full py-1.5 bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] font-semibold rounded-lg hover:bg-indigo-100 transition-colors flex items-center justify-center shadow-sm">
+                            <i class="fa-solid fa-truck-fast mr-1.5"></i> คืนสินค้ากับขนส่ง
+                        </button>`;
+                    } else if (c.returnChannel === 'ขนส่งมารับสินค้ากลับ') {
+                        whStatusHtml += `
+                        <div class="mt-2 text-[10px] font-medium text-indigo-600 bg-indigo-50 px-2.5 py-1.5 rounded-lg border border-indigo-100 flex items-center">
+                            <i class="fa-solid fa-truck-fast mr-1.5"></i> คืนผ่านขนส่งแล้ว ${c.claimPoNo ? `(PO: ${c.claimPoNo})` : ''}
+                        </div>`;
+                    }
+                } else if (c.whReceived === 'ตีกลับขนส่ง') {
+                    whStatusHtml = `
+                        <div class="mt-3 text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1.5 rounded-lg border border-indigo-100 flex justify-between items-start">
+                            <div class="flex flex-col"><span class="flex items-center"><i class="fa-solid fa-truck-fast mr-1.5"></i> ตีกลับขนส่งทันที</span><span class="text-[9px] text-indigo-500 font-medium mt-0.5 ml-5">ผู้ดำเนินการ: ${c.whReceiverName || '-'}</span></div>
+                        </div>`;
+                    if (c.returnChannel === 'ขนส่งมารับสินค้ากลับ') {
+                        whStatusHtml += `
+                        <div class="mt-2 text-[10px] font-medium text-indigo-600 bg-indigo-50 px-2.5 py-1.5 rounded-lg border border-indigo-100 flex items-center">
+                            <i class="fa-solid fa-file-invoice mr-1.5"></i> ${c.claimType} ${c.claimPoNo ? `(PO: ${c.claimPoNo})` : ''}
+                        </div>`;
+                    }
+                } else {
+                    whStatusHtml = `
+                        <button onclick="openWHReceiveModal(${c.rowId})" class="mt-3 w-full py-2 bg-slate-800 text-white text-[11px] font-semibold rounded-xl hover:bg-slate-700 transition-colors flex items-center justify-center shadow-sm">
+                            <i class="fa-solid fa-boxes-packing mr-1.5 text-slate-300"></i> จัดการรับสินค้า / ส่งคืนขนส่ง
+                        </button>`;
+                }
 
                 container.innerHTML += `
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
@@ -588,6 +669,74 @@
                         </div>${whStatusHtml}
                     </div>`;
             });
+        }
+
+        async function openTransportReturnModal(rowId) {
+            const claim = claimsDB.find(c => c.rowId === rowId);
+            if (!claim) return;
+            const cType = claim.claimType || '';
+            const cPoNo = claim.claimPoNo || '';
+            const cBillNo = claim.claimBillNo || '';
+            const cAmount = claim.claimAmount || '';
+
+            const { value: formValues } = await Swal.fire({
+                title: 'คืนสินค้ากับขนส่ง',
+                html: `
+                    <div class="text-left mt-2 space-y-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">รูปแบบการคืน <span class="text-rose-500">*</span></label>
+                            <select id="swal-trans-type" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium">
+                                <option value="">-- เลือกรูปแบบ --</option>
+                                <option value="คืนสินค้า-ทำCN" ${cType==='คืนสินค้า-ทำCN'?'selected':''}>คืนสินค้า-ทำCN</option>
+                                <option value="คืนสินค้าหักในบิล" ${cType==='คืนสินค้าหักในบิล'?'selected':''}>คืนสินค้าหักในบิล</option>
+                            </select>
+                        </div>
+                        <div id="swal-trans-po-div" style="display: ${cType ? 'block' : 'none'};">
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">เลขที่ PO (Purchase Order)</label>
+                            <input type="text" id="swal-trans-po" value="${cPoNo}" placeholder="ระบุเลขที่ PO..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                        </div>
+                        <div id="swal-trans-bill-div" style="display: ${cType==='คืนสินค้าหักในบิล'?'flex':'none'};" class="gap-2 mt-3">
+                            <div class="flex-1"><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">บิลเลขที่</label><input type="text" id="swal-trans-bill" value="${cBillNo}" placeholder="บิลเลขที่..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm"></div>
+                            <div class="flex-1"><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">ยอดหัก</label><input type="number" id="swal-trans-amount" value="${cAmount}" placeholder="ยอดหัก..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm"></div>
+                        </div>
+                    </div>
+                `,
+                focusConfirm: false, showCancelButton: true, confirmButtonText: 'ยืนยันส่งคืน', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#4f46e5',
+                didOpen: () => {
+                    const typeSelect = document.getElementById('swal-trans-type');
+                    const poDiv = document.getElementById('swal-trans-po-div');
+                    const billDiv = document.getElementById('swal-trans-bill-div');
+                    typeSelect.addEventListener('change', (e) => {
+                        const val = e.target.value;
+                        poDiv.style.display = val ? 'block' : 'none';
+                        billDiv.style.display = (val === 'คืนสินค้าหักในบิล') ? 'flex' : 'none';
+                    });
+                },
+                preConfirm: () => {
+                    const type = document.getElementById('swal-trans-type').value;
+                    if (!type) { Swal.showValidationMessage('กรุณาเลือกรูปแบบการคืนสินค้า'); return false; }
+                    return {
+                        claimType: type, claimPoNo: document.getElementById('swal-trans-po').value, claimBillNo: document.getElementById('swal-trans-bill').value, claimAmount: document.getElementById('swal-trans-amount').value, returnChannel: 'ขนส่งมารับสินค้ากลับ', status: 'สำเร็จแล้ว'
+                    };
+                }
+            });
+
+            if (formValues) {
+                Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                try {
+                    let formattedReturnDate = getTodayStr();
+                    if(SCRIPT_URL !== '') {
+                        try {
+                            await fetch(SCRIPT_URL, {
+                                method: 'POST', body: JSON.stringify({ action: 'updateStatus', rowId: rowId, status: formValues.status, returnDate: formattedReturnDate, claimType: formValues.claimType, claimBillNo: formValues.claimBillNo, claimAmount: formValues.claimAmount, returnChannel: formValues.returnChannel, claimPoNo: formValues.claimPoNo })
+                            });
+                        } catch(e) { console.warn(e); }
+                    }
+                    const itemIndex = claimsDB.findIndex(c => c.rowId === rowId);
+                    if(itemIndex > -1) { Object.assign(claimsDB[itemIndex], formValues); claimsDB[itemIndex].returnDate = formattedReturnDate; }
+                    sendAppLog('Transport Return', `ส่งคืนผ่านขนส่ง Row ${rowId}`); Swal.fire({ icon: 'success', title: 'ส่งคืนสินค้าเรียบร้อย', timer: 1500, showConfirmButton: false }); updateViews();
+                } catch (err) { Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message }); }
+            }
         }
 
         // ================= SECTION 3: MANAGE (DETAILED) =================
@@ -619,9 +768,9 @@
                 
                 // Detailed Info HTML
                 let claimDetailsHtml = '';
-                if (c.claimType || c.returnChannel) {
+                if (c.claimType || c.returnChannel || c.claimPoNo) {
                     claimDetailsHtml = `<div class="col-span-2 mt-1 p-2 bg-white rounded-xl border border-slate-100 space-y-1">
-                        ${c.claimType ? `<p class="text-[10px] text-slate-700 font-medium flex items-center"><i class="fa-solid fa-file-invoice mr-1.5 text-indigo-400"></i> ${c.claimType} ${c.claimType === 'คืนสินค้าหักในบิล' && c.claimBillNo ? `<span class="ml-1 text-slate-500 font-normal">(บิล: ${c.claimBillNo} | หัก: ${c.claimAmount})</span>` : ''}</p>` : ''}
+                        ${c.claimType ? `<p class="text-[10px] text-slate-700 font-medium flex items-center"><i class="fa-solid fa-file-invoice mr-1.5 text-indigo-400"></i> ${c.claimType} ${c.claimPoNo ? `<span class="ml-1 text-slate-500 font-normal">(PO: ${c.claimPoNo})</span>` : ''} ${c.claimType === 'คืนสินค้าหักในบิล' && c.claimBillNo ? `<span class="ml-1 text-slate-500 font-normal">(บิล: ${c.claimBillNo} | หัก: ${c.claimAmount})</span>` : ''}</p>` : ''}
                         ${c.returnChannel ? `<p class="text-[10px] text-slate-700 font-medium flex items-center"><i class="fa-solid fa-truck-fast mr-1.5 text-emerald-500"></i> ${c.returnChannel}</p>` : ''}
                     </div>`;
                 }
@@ -630,6 +779,8 @@
                 let whStatusHtml = '';
                 if(c.whReceived === 'รับแล้ว') {
                     whStatusHtml = `<div class="col-span-2 mt-1 p-2 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between text-[10px]"><span class="text-emerald-700 font-bold"><i class="fa-solid fa-check-circle mr-1"></i> คลังรับของแล้ว</span><span class="text-emerald-600 bg-white px-1.5 py-0.5 rounded shadow-sm">Loc: ${c.whLocation}</span></div>`;
+                } else if(c.whReceived === 'ตีกลับขนส่ง') {
+                    whStatusHtml = `<div class="col-span-2 mt-1 p-2 bg-indigo-50 rounded-xl border border-indigo-100 flex items-center text-[10px] text-indigo-600 font-bold"><i class="fa-solid fa-truck-fast mr-1.5"></i> สินค้าถูกตีกลับขนส่งแล้ว</div>`;
                 } else {
                     whStatusHtml = `<div class="col-span-2 mt-1 p-2 bg-rose-50 rounded-xl border border-rose-100 flex items-center text-[10px] text-rose-600 font-bold"><i class="fa-solid fa-clock mr-1.5"></i> รอคลังสินค้ายืนยันรับของเข้าระบบ</div>`;
                 }
@@ -683,7 +834,7 @@
                 statusGroups.forEach(group => {
                     const gItems = aggItems.filter(item => item.status === group.value);
                     counts[group.value] = gItems.length;
-                    gItems.forEach(i => { if(i.whReceived === 'รับแล้ว') whReceivedCount++; });
+                    gItems.forEach(i => { if(i.whReceived === 'รับแล้ว' || i.whReceived === 'ตีกลับขนส่ง') whReceivedCount++; });
 
                     if (gItems.length > 0) {
                         groupedItemsHtml += `<div class="mt-5 mb-3 flex items-center gap-2 px-1"><span class="px-2.5 py-1 rounded-lg text-[10px] font-bold border ${group.colorClass} shadow-sm"><i class="fa-solid ${group.icon} mr-1"></i> ${group.label} (${gItems.length})</span><div class="h-px bg-slate-200 flex-1"></div></div><div class="space-y-4">${gItems.map(c => createCardHTML(c, true)).join('')}</div>`;
@@ -709,7 +860,7 @@
                             <!-- Mini Vendor Dashboard -->
                             <div class="grid grid-cols-2 gap-2 mt-1">
                                 <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 text-[10px] font-medium text-slate-600 flex items-center justify-between">
-                                    <span class="flex items-center"><i class="fa-solid fa-boxes-packing text-indigo-400 mr-1.5"></i> คลังรับของแล้ว</span>
+                                    <span class="flex items-center"><i class="fa-solid fa-boxes-packing text-indigo-400 mr-1.5"></i> คลังรับ/ตีกลับแล้ว</span>
                                     <span class="${whReceivedCount === aggItems.length ? 'text-emerald-600' : 'text-rose-500'} font-bold">${whReceivedCount}/${aggItems.length}</span>
                                 </div>
                                 <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 text-[10px] font-medium flex items-center gap-1 overflow-x-auto no-scrollbar whitespace-nowrap">
@@ -739,7 +890,7 @@
                 container.appendChild(groupDiv);
             });
 
-            // Items without Vendor (ย่อโค้ดให้สั้นลง)
+            // Items without Vendor
             Object.keys(groupedByItem).forEach((itemName, iIndex) => {
                 const items = groupedByItem[itemName]; const aggItems = aggregateItems(items); 
                 const groupDiv = document.createElement('div'); groupDiv.className = 'mb-4 mt-6';
@@ -775,7 +926,6 @@
             if (content.classList.contains('hidden')) { content.classList.remove('hidden'); icon.classList.add('rotate-180'); } else { content.classList.add('hidden'); icon.classList.remove('rotate-180'); }
         }
 
-
         // ================= ฟังก์ชันพิมพ์และแก้ไข =================
         function printClaimDoc(vendorName, rowIds) {
             const items = claimsDB.filter(c => rowIds.includes(c.rowId)); const aggItems = aggregateItems(items);
@@ -793,6 +943,7 @@
         async function openUpdateModal(rowIds, currentStatus) {
             const claimData = claimsDB.find(c => c.rowId === rowIds[0]) || {};
             const cType = claimData.claimType || ''; const cBillNo = claimData.claimBillNo || ''; const cAmount = claimData.claimAmount || ''; const cChannel = claimData.returnChannel || '';
+            const cPoNo = claimData.claimPoNo || '';
 
             const { value: formValues } = await Swal.fire({
                 title: 'จัดการสถานะ & รูปแบบเคลม',
@@ -804,6 +955,12 @@
                             <h5 class="text-[11px] font-bold text-indigo-600 mb-3 flex items-center bg-indigo-50 px-2 py-1.5 rounded-lg w-fit"><i class="fa-solid fa-list-check mr-1.5"></i> ข้อมูลประกอบการเคลม (ถ้ามี)</h5>
                             <div class="space-y-3">
                                 <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">รูปแบบการเคลม</label><select id="swal-claim-type" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium"><option value="">-- ไม่ระบุ --</option><option value="คืนสินค้า-ทำCN" ${cType==='คืนสินค้า-ทำCN'?'selected':''}>คืนสินค้า-ทำCN</option><option value="คืนสินค้าหักในบิล" ${cType==='คืนสินค้าหักในบิล'?'selected':''}>คืนสินค้าหักในบิล</option><option value="เปลี่ยนสินค้า รอรับสินค้าใหม่" ${cType==='เปลี่ยนสินค้า รอรับสินค้าใหม่'?'selected':''}>เปลี่ยนสินค้า รอรับสินค้าใหม่</option><option value="เซล์ซื้อสินค้าคืน" ${cType==='เซล์ซื้อสินค้าคืน'?'selected':''}>เซล์ซื้อสินค้าคืน</option></select></div>
+                                
+                                <div id="swal-po-details" style="display: ${cType==='คืนสินค้า-ทำCN' || cType==='คืนสินค้าหักในบิล' ? 'block' : 'none'};">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">เลขที่ PO</label>
+                                    <input type="text" id="swal-claim-po" value="${cPoNo}" placeholder="ระบุเลขที่ PO..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                                </div>
+
                                 <div id="swal-bill-details" style="display: ${cType==='คืนสินค้าหักในบิล'?'flex':'none'};" class="gap-2"><div class="flex-1"><input type="text" id="swal-claim-bill-no" value="${cBillNo}" placeholder="บิลเลขที่..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm"></div><div class="flex-1"><input type="number" id="swal-claim-amount" value="${cAmount}" placeholder="ยอดหัก..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm"></div></div>
                                 <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">ช่องทางการคืน</label><select id="swal-return-channel" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium"><option value="">-- ไม่ระบุ --</option><option value="เซลล์มารับสินค้ากลับ" ${cChannel==='เซลล์มารับสินค้ากลับ'?'selected':''}>เซลล์มารับสินค้ากลับ</option><option value="ขนส่งมารับสินค้ากลับ" ${cChannel==='ขนส่งมารับสินค้ากลับ'?'selected':''}>ขนส่งมารับสินค้ากลับ</option></select></div>
                             </div>
@@ -816,6 +973,7 @@
                     const returnDiv = document.getElementById('returnDateDiv');
                     const claimTypeSelect = document.getElementById('swal-claim-type');
                     const billDetailsDiv = document.getElementById('swal-bill-details');
+                    const poDetailsDiv = document.getElementById('swal-po-details');
 
                     statusSelect.addEventListener('change', (e) => { 
                         returnDiv.style.display = (e.target.value === 'สำเร็จแล้ว') ? 'block' : 'none'; 
@@ -824,22 +982,26 @@
                     claimTypeSelect.addEventListener('change', (e) => { 
                         const val = e.target.value;
                         billDetailsDiv.style.display = (val === 'คืนสินค้าหักในบิล') ? 'flex' : 'none'; 
-                        
-                        // ระบบอัตโนมัติ: เปลี่ยนสถานะเป็นสำเร็จแล้ว ถ้าเลือกรูปแบบรับเงินคืน
+                        poDetailsDiv.style.display = (val === 'คืนสินค้า-ทำCN' || val === 'คืนสินค้าหักในบิล') ? 'block' : 'none';
+
                         if(val === 'คืนสินค้า-ทำCN' || val === 'คืนสินค้าหักในบิล') {
                             statusSelect.value = 'สำเร็จแล้ว';
                             statusSelect.dispatchEvent(new Event('change'));
                         }
                     });
                 },
-                preConfirm: () => { return { status: document.getElementById('swal-status').value, returnDate: document.getElementById('swal-returndate').value, claimType: document.getElementById('swal-claim-type').value, claimBillNo: document.getElementById('swal-claim-bill-no').value, claimAmount: document.getElementById('swal-claim-amount').value, returnChannel: document.getElementById('swal-return-channel').value } }
+                preConfirm: () => { return { status: document.getElementById('swal-status').value, returnDate: document.getElementById('swal-returndate').value, claimType: document.getElementById('swal-claim-type').value, claimBillNo: document.getElementById('swal-claim-bill-no').value, claimAmount: document.getElementById('swal-claim-amount').value, returnChannel: document.getElementById('swal-return-channel').value, claimPoNo: document.getElementById('swal-claim-po').value } }
             });
 
             if (formValues) {
                 let formattedReturnDate = (formValues.status === 'สำเร็จแล้ว' && formValues.returnDate) ? parseDate(formValues.returnDate) : "";
                 Swal.fire({ title: 'กำลังอัพเดท...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
                 try {
-                    if(SCRIPT_URL !== '') { for (let id of rowIds) { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'updateStatus', rowId: id, status: formValues.status, returnDate: formattedReturnDate, claimType: formValues.claimType, claimBillNo: formValues.claimBillNo, claimAmount: formValues.claimAmount, returnChannel: formValues.returnChannel }) }); } }
+                    if(SCRIPT_URL !== '') {
+                        for (let id of rowIds) {
+                            try { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'updateStatus', rowId: id, status: formValues.status, returnDate: formattedReturnDate, claimType: formValues.claimType, claimBillNo: formValues.claimBillNo, claimAmount: formValues.claimAmount, returnChannel: formValues.returnChannel, claimPoNo: formValues.claimPoNo }) }); } catch(e) { console.warn(e); }
+                        }
+                    }
                     rowIds.forEach(id => { const itemIndex = claimsDB.findIndex(c => c.rowId === id); if(itemIndex > -1) { Object.assign(claimsDB[itemIndex], formValues); } });
                     Swal.fire({ icon: 'success', title: 'อัพเดทสำเร็จ', timer: 1500, showConfirmButton: false }); updateViews();
                 } catch (err) { Swal.fire({ icon: 'error', title: 'อัพเดทล้มเหลว', text: err.message }); }
@@ -849,6 +1011,7 @@
         async function openGroupUpdateModal(vendorName, rowIds, defaultStatus = null) {
             const claimData = claimsDB.find(c => c.rowId === rowIds[0]) || {};
             const cType = claimData.claimType || ''; const cBillNo = claimData.claimBillNo || ''; const cAmount = claimData.claimAmount || ''; const cChannel = claimData.returnChannel || '';
+            const cPoNo = claimData.claimPoNo || '';
 
             const { value: formValues } = await Swal.fire({
                 title: 'อัพเดททั้งบิล',
@@ -861,6 +1024,12 @@
                             <h5 class="text-[11px] font-bold text-indigo-600 mb-3 flex items-center bg-indigo-50 px-2 py-1.5 rounded-lg w-fit"><i class="fa-solid fa-list-check mr-1.5"></i> ข้อมูลประกอบการเคลม (ถ้ามี)</h5>
                             <div class="space-y-3">
                                 <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">รูปแบบการเคลม</label><select id="swal-claim-type" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium"><option value="">-- ไม่ระบุ --</option><option value="คืนสินค้า-ทำCN" ${cType==='คืนสินค้า-ทำCN'?'selected':''}>คืนสินค้า-ทำCN</option><option value="คืนสินค้าหักในบิล" ${cType==='คืนสินค้าหักในบิล'?'selected':''}>คืนสินค้าหักในบิล</option><option value="เปลี่ยนสินค้า รอรับสินค้าใหม่" ${cType==='เปลี่ยนสินค้า รอรับสินค้าใหม่'?'selected':''}>เปลี่ยนสินค้า รอรับสินค้าใหม่</option><option value="เซล์ซื้อสินค้าคืน" ${cType==='เซล์ซื้อสินค้าคืน'?'selected':''}>เซล์ซื้อสินค้าคืน</option></select></div>
+                                
+                                <div id="swal-po-details" style="display: ${cType==='คืนสินค้า-ทำCN' || cType==='คืนสินค้าหักในบิล' ? 'block' : 'none'};">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">เลขที่ PO</label>
+                                    <input type="text" id="swal-claim-po" value="${cPoNo}" placeholder="ระบุเลขที่ PO..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                                </div>
+
                                 <div id="swal-bill-details" style="display: ${cType==='คืนสินค้าหักในบิล'?'flex':'none'};" class="gap-2"><div class="flex-1"><input type="text" id="swal-claim-bill-no" value="${cBillNo}" placeholder="บิลเลขที่..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm"></div><div class="flex-1"><input type="number" id="swal-claim-amount" value="${cAmount}" placeholder="ยอดหัก..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm"></div></div>
                                 <div><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">ช่องทางการคืน</label><select id="swal-return-channel" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium"><option value="">-- ไม่ระบุ --</option><option value="เซลล์มารับสินค้ากลับ" ${cChannel==='เซลล์มารับสินค้ากลับ'?'selected':''}>เซลล์มารับสินค้ากลับ</option><option value="ขนส่งมารับสินค้ากลับ" ${cChannel==='ขนส่งมารับสินค้ากลับ'?'selected':''}>ขนส่งมารับสินค้ากลับ</option></select></div>
                             </div>
@@ -873,6 +1042,7 @@
                     const returnDiv = document.getElementById('groupReturnDateDiv');
                     const claimTypeSelect = document.getElementById('swal-claim-type');
                     const billDetailsDiv = document.getElementById('swal-bill-details');
+                    const poDetailsDiv = document.getElementById('swal-po-details');
 
                     statusSelect.addEventListener('change', (e) => { 
                         returnDiv.style.display = (e.target.value === 'สำเร็จแล้ว') ? 'block' : 'none'; 
@@ -881,15 +1051,15 @@
                     claimTypeSelect.addEventListener('change', (e) => { 
                         const val = e.target.value;
                         billDetailsDiv.style.display = (val === 'คืนสินค้าหักในบิล') ? 'flex' : 'none'; 
-                        
-                        // ระบบอัตโนมัติ: เปลี่ยนสถานะเป็นสำเร็จแล้ว
+                        poDetailsDiv.style.display = (val === 'คืนสินค้า-ทำCN' || val === 'คืนสินค้าหักในบิล') ? 'block' : 'none';
+
                         if(val === 'คืนสินค้า-ทำCN' || val === 'คืนสินค้าหักในบิล') {
                             statusSelect.value = 'สำเร็จแล้ว';
                             statusSelect.dispatchEvent(new Event('change'));
                         }
                     });
                 },
-                preConfirm: () => { return { status: document.getElementById('swal-group-status').value, returnDate: document.getElementById('swal-group-returndate').value, claimType: document.getElementById('swal-claim-type').value, claimBillNo: document.getElementById('swal-claim-bill-no').value, claimAmount: document.getElementById('swal-claim-amount').value, returnChannel: document.getElementById('swal-return-channel').value } }
+                preConfirm: () => { return { status: document.getElementById('swal-group-status').value, returnDate: document.getElementById('swal-group-returndate').value, claimType: document.getElementById('swal-claim-type').value, claimBillNo: document.getElementById('swal-claim-bill-no').value, claimAmount: document.getElementById('swal-claim-amount').value, returnChannel: document.getElementById('swal-return-channel').value, claimPoNo: document.getElementById('swal-claim-po').value } }
             });
 
             if (formValues) {
@@ -898,7 +1068,10 @@
 
                 try {
                     if(SCRIPT_URL !== '') {
-                        for (let i = 0; i < rowIds.length; i++) { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'updateStatus', rowId: rowIds[i], status: formValues.status, returnDate: formattedReturnDate, claimType: formValues.claimType, claimBillNo: formValues.claimBillNo, claimAmount: formValues.claimAmount, returnChannel: formValues.returnChannel }) }); successCount++; Swal.update({ html: `กำลังบันทึก <b>${successCount}</b> / ${rowIds.length} รายการ` }); }
+                        for (let i = 0; i < rowIds.length; i++) { 
+                            try { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'updateStatus', rowId: rowIds[i], status: formValues.status, returnDate: formattedReturnDate, claimType: formValues.claimType, claimBillNo: formValues.claimBillNo, claimAmount: formValues.claimAmount, returnChannel: formValues.returnChannel, claimPoNo: formValues.claimPoNo }) }); } catch(e) { console.warn(e); }
+                            successCount++; Swal.update({ html: `กำลังบันทึก <b>${successCount}</b> / ${rowIds.length} รายการ` }); 
+                        }
                     }
                     rowIds.forEach(id => { const itemIndex = claimsDB.findIndex(c => c.rowId === id); if(itemIndex > -1) { Object.assign(claimsDB[itemIndex], formValues); } });
                     sendAppLog('Group Update', `อัพเดทสถานะทั้งบิลของ Vendor "${vendorName}" จำนวน ${successCount} รายการ`);
@@ -910,18 +1083,43 @@
         async function openEditClaimModal(rowIds) {
             const claim = claimsDB.find(c => c.rowId === rowIds[0]); if (!claim) return;
             const totalQty = rowIds.reduce((sum, id) => { const item = claimsDB.find(c => c.rowId === id); return sum + (item ? Number(item.qty) : 0); }, 0);
-            const causes = ['บรรจุภัณฑ์รั่วซึม/แตก [จากขนส่ง]', 'หมดอายุ', 'วัตถุดิบเปลี่ยนสภาพ', 'เสียหายจากการจัดเก็บ (หนูกัด/โดนน้ำ)', 'ความผิดพลาดจากการขนย้าย'];
-            const warehouses = ['เจอเองภายในคลัง', 'เจอเองหน้าร้าน(เรียงขึ้นเชลฟ์/เจอในเชลฟ์)', 'ลูกค้าส่งกลับมาเปลี่ยน/คืน [ความผิดลูกค้า]', 'ลูกค้าส่งกลับมาเปลี่ยน/คืน [ความร้านค้า/VD]'];
-            const subWarehouses = ['W1', 'W2', 'W3', 'W4', 'W5', 'C1', 'C2'];
+            
+            const causes = ['ขนส่ง (Vendor)', 'โรงงานผลิตสินค้า', 'พนักงานภายใน', 'ลูกค้านำมาคืน', 'อื่นๆ'];
+            const warehouses = ['W1', 'W2', 'W3', 'W4', 'W5', 'C1', 'C2', 'หน้าร้าน (เชลฟ์)'];
 
-            let baseCause = claim.cause; let personName = '';
-            if (baseCause && baseCause.startsWith('ความผิดพลาดจากการขนย้าย')) { baseCause = 'ความผิดพลาดจากการขนย้าย'; const match = claim.cause.match(/\(คนทำ:\s*(.*?)\)/); if (match) personName = match[1]; }
-            let baseWarehouse = claim.warehouse || ''; let subWName = '';
-            if (baseWarehouse.startsWith('เจอเองภายในคลัง')) { baseWarehouse = 'เจอเองภายในคลัง'; const matchW = claim.warehouse.match(/\((.*?)\)/); if (matchW) subWName = matchW[1]; }
+            let baseCause = claim.cause; 
+            let personName = '';
+            let customerType = '';
+            let customerPerson = '';
+            let otherText = '';
+
+            if (baseCause && baseCause.startsWith('พนักงานภายใน')) { 
+                baseCause = 'พนักงานภายใน'; 
+                const match = claim.cause.match(/\((.*?)\)/); 
+                if (match) personName = match[1]; 
+            } else if (baseCause && baseCause.startsWith('ลูกค้านำมาคืน')) {
+                baseCause = 'ลูกค้านำมาคืน';
+                const typeMatch = claim.cause.match(/\[(.*?)\]/);
+                if (typeMatch) customerType = typeMatch[1];
+                const personMatch = claim.cause.match(/\((.*?)\)/);
+                if (personMatch) customerPerson = personMatch[1];
+            } else if (baseCause && baseCause.startsWith('อื่นๆ:')) {
+                baseCause = 'อื่นๆ';
+                otherText = claim.cause.replace('อื่นๆ: ', '').trim();
+            } else if (!causes.includes(baseCause)) {
+                if (baseCause) { otherText = baseCause; baseCause = 'อื่นๆ'; }
+            }
+
+            let baseWarehouse = claim.warehouse || ''; 
+            if (!warehouses.includes(baseWarehouse)) {
+                 const matchW = baseWarehouse.match(/\((W\d|C\d)\)/);
+                 if (matchW) baseWarehouse = matchW[1];
+                 else if (baseWarehouse.includes('หน้าร้าน')) baseWarehouse = 'หน้าร้าน (เชลฟ์)';
+                 else if (baseWarehouse) warehouses.push(baseWarehouse); 
+            }
 
             const causeOptions = causes.map(c => `<option value="${c}" ${baseCause === c ? 'selected' : ''}>${c}</option>`).join('');
             const whOptions = warehouses.map(w => `<option value="${w}" ${baseWarehouse === w ? 'selected' : ''}>${w}</option>`).join('');
-            const subWhOptions = subWarehouses.map(w => `<option value="${w}" ${subWName === w ? 'selected' : ''}>${w}</option>`).join('');
 
             const { value: formValues } = await Swal.fire({
                 title: 'แก้ไขข้อมูลเบื้องต้น',
@@ -930,21 +1128,56 @@
                         ${rowIds.length > 1 ? `<div class="bg-amber-50 text-amber-600 text-[10px] p-2 rounded-lg font-medium border border-amber-100"><i class="fa-solid fa-circle-info mr-1"></i> มีการรวมยอดจาก ${rowIds.length} รายการ แก้ไขจะถูกรวบเป็นแถวเดียว</div>` : ''}
                         <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">จำนวนรวม</label><input type="number" id="edit-qty" value="${totalQty}" min="1" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm font-bold text-slate-800"></div>
                         <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">วันที่เกิดเหตุ (วว/ดด/ปป)</label><input type="text" id="edit-date" value="${claim.incidentDate}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm"></div>
-                        <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">สาเหตุ</label><select id="edit-cause" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm">${causeOptions}</select></div>
-                        <div id="edit-cause-person-div" style="display: ${baseCause === 'ความผิดพลาดจากการขนย้าย' ? 'block' : 'none'};"><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">ระบุชื่อคนทำ</label><input type="text" id="edit-cause-person" value="${personName}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm" placeholder="ชื่อพนักงานที่ทำเสียหาย..."></div>
-                        <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">คลังสินค้า/แหล่งพบ</label><select id="edit-warehouse" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm">${whOptions}</select></div>
-                        <div id="edit-sub-warehouse-div" style="display: ${baseWarehouse === 'เจอเองภายในคลัง' ? 'block' : 'none'};"><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">ระบุคลัง</label><select id="edit-sub-warehouse" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm"><option value="">-- เลือกคลัง --</option>${subWhOptions}</select></div>
+                        
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">ต้นเหตุเกิดจาก</label><select id="edit-cause" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm">${causeOptions}</select></div>
+                        
+                        <div id="edit-cause-person-div" style="display: ${baseCause === 'พนักงานภายใน' ? 'block' : 'none'};"><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">ระบุพนักงานที่เกี่ยวข้อง</label><input type="text" id="edit-cause-person" value="${personName}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm" placeholder="ชื่อพนักงาน..."></div>
+                        
+                        <div id="edit-cause-customer-div" style="display: ${baseCause === 'ลูกค้านำมาคืน' ? 'block' : 'none'};" class="space-y-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">ประเภทการคืน</label>
+                                <select id="edit-cause-customer-type" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-slate-800 text-sm">
+                                    <option value="">-- เลือกประเภท --</option>
+                                    <option value="ความผิดลูกค้า" ${customerType === 'ความผิดลูกค้า' ? 'selected' : ''}>ความผิดลูกค้า</option>
+                                    <option value="ความผิดร้าน" ${customerType === 'ความผิดร้าน' ? 'selected' : ''}>ความผิดร้าน</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">ระบุชื่อลูกค้า / พนักงาน</label>
+                                <input type="text" id="edit-cause-customer-person" value="${customerPerson}" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-slate-800 text-sm" placeholder="ชื่อ...">
+                            </div>
+                        </div>
+
+                        <div id="edit-cause-other-div" style="display: ${baseCause === 'อื่นๆ' ? 'block' : 'none'};"><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">ระบุสาเหตุอื่นๆ</label><input type="text" id="edit-cause-other-text" value="${otherText}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm" placeholder="ระบุรายละเอียด..."></div>
+
+                        <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">ระบุคลังที่พบปัญหา</label><select id="edit-warehouse" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm">${whOptions}</select></div>
                         <div><label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">หมายเหตุ</label><textarea id="edit-note" rows="2" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm">${claim.note}</textarea></div>
                     </div>
                 `,
                 focusConfirm: false, showCancelButton: true, confirmButtonText: 'บันทึก', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#1e293b',
                 didOpen: () => {
-                    document.getElementById('edit-cause').addEventListener('change', (e) => { document.getElementById('edit-cause-person-div').style.display = (e.target.value === 'ความผิดพลาดจากการขนย้าย') ? 'block' : 'none'; });
-                    document.getElementById('edit-warehouse').addEventListener('change', (e) => { document.getElementById('edit-sub-warehouse-div').style.display = (e.target.value === 'เจอเองภายในคลัง') ? 'block' : 'none'; });
+                    document.getElementById('edit-cause').addEventListener('change', (e) => { 
+                        const val = e.target.value;
+                        document.getElementById('edit-cause-person-div').style.display = (val === 'พนักงานภายใน') ? 'block' : 'none'; 
+                        document.getElementById('edit-cause-customer-div').style.display = (val === 'ลูกค้านำมาคืน') ? 'block' : 'none';
+                        document.getElementById('edit-cause-other-div').style.display = (val === 'อื่นๆ') ? 'block' : 'none';
+                    });
                 },
                 preConfirm: () => {
-                    let finalCause = document.getElementById('edit-cause').value; if (finalCause === 'ความผิดพลาดจากการขนย้าย') { const pName = document.getElementById('edit-cause-person').value.trim(); if (pName) finalCause = `ความผิดพลาดจากการขนย้าย (คนทำ: ${pName})`; }
-                    let finalWarehouse = document.getElementById('edit-warehouse').value; if (finalWarehouse === 'เจอเองภายในคลัง') { const sName = document.getElementById('edit-sub-warehouse').value; if (sName) finalWarehouse = `เจอเองภายในคลัง (${sName})`; }
+                    let finalCause = document.getElementById('edit-cause').value; 
+                    if (finalCause === 'พนักงานภายใน') { 
+                        const pName = document.getElementById('edit-cause-person').value.trim(); 
+                        if (pName) finalCause = `พนักงานภายใน (${pName})`; 
+                    } else if (finalCause === 'ลูกค้านำมาคืน') {
+                        const cType = document.getElementById('edit-cause-customer-type').value;
+                        const cPerson = document.getElementById('edit-cause-customer-person').value.trim();
+                        finalCause = `ลูกค้านำมาคืน [${cType}] (${cPerson})`;
+                    } else if (finalCause === 'อื่นๆ') {
+                        const otherTxt = document.getElementById('edit-cause-other-text').value.trim();
+                        finalCause = `อื่นๆ: ${otherTxt}`;
+                    }
+
+                    let finalWarehouse = document.getElementById('edit-warehouse').value; 
                     return { qty: document.getElementById('edit-qty').value, incidentDate: document.getElementById('edit-date').value, cause: finalCause, warehouse: finalWarehouse, note: document.getElementById('edit-note').value }
                 }
             });
@@ -954,8 +1187,10 @@
                 try {
                     let formattedDate = formValues.incidentDate; if(formattedDate.includes('/')) formattedDate = parseDate(formattedDate);
                     if(SCRIPT_URL !== '') {
-                        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'editClaim', rowId: rowIds[0], qty: formValues.qty, incidentDate: formattedDate, cause: formValues.cause, warehouse: formValues.warehouse, note: formValues.note }) });
-                        for (let i = 1; i < rowIds.length; i++) { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'deleteClaim', rowId: rowIds[i] }) }); }
+                        try { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'editClaim', rowId: rowIds[0], qty: formValues.qty, incidentDate: formattedDate, cause: formValues.cause, warehouse: formValues.warehouse, note: formValues.note }) }); } catch(e) { console.warn(e); }
+                        for (let i = 1; i < rowIds.length; i++) { 
+                            try { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'deleteClaim', rowId: rowIds[i] }) }); } catch(e) { console.warn(e); } 
+                        }
                     }
                     Object.assign(claim, formValues); claim.incidentDate = formattedDate;
                     if (rowIds.length > 1) { const idsToRemove = rowIds.slice(1); claimsDB = claimsDB.filter(c => !idsToRemove.includes(c.rowId)); }
@@ -969,7 +1204,11 @@
             if (isConfirmed) {
                 Swal.fire({ title: 'กำลังลบ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
                 try {
-                    if(SCRIPT_URL !== '') { for (let id of rowIds) { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'deleteClaim', rowId: id }) }); } }
+                    if(SCRIPT_URL !== '') { 
+                        for (let id of rowIds) { 
+                            try { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'deleteClaim', rowId: id }) }); } catch(e) { console.warn(e); } 
+                        } 
+                    }
                     claimsDB = claimsDB.filter(c => !rowIds.includes(c.rowId)); sendAppLog('Delete Claim', `ลบจำนวน ${rowIds.length} แถว`);
                     Swal.fire({ icon: 'success', title: 'ลบสำเร็จ', timer: 1500, showConfirmButton: false }); updateViews();
                 } catch (err) { Swal.fire({ icon: 'error', title: 'ลบล้มเหลว', text: err.message }); }
@@ -1008,7 +1247,12 @@
             if (selectedVendorName) {
                 let successCount = 0; Swal.fire({ title: 'กำลังอัพเดท...', html: `กำลังบันทึก <b>0</b> / ${rowIds.length} รายการ`, allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
                 try {
-                    if(SCRIPT_URL !== '') { for (let i = 0; i < rowIds.length; i++) { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'updateVendor', rowId: rowIds[i], vendor: selectedVendorName }) }); successCount++; Swal.update({ html: `กำลังบันทึก <b>${successCount}</b> / ${rowIds.length} รายการ` }); } }
+                    if(SCRIPT_URL !== '') { 
+                        for (let i = 0; i < rowIds.length; i++) { 
+                            try { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'updateVendor', rowId: rowIds[i], vendor: selectedVendorName }) }); } catch(e) { console.warn(e); } 
+                            successCount++; Swal.update({ html: `กำลังบันทึก <b>${successCount}</b> / ${rowIds.length} รายการ` }); 
+                        } 
+                    }
                     rowIds.forEach(id => { const itemIndex = claimsDB.findIndex(c => c.rowId === id); if(itemIndex > -1) claimsDB[itemIndex].vendor = selectedVendorName; });
                     if (!vendorsDB.includes(selectedVendorName)) { vendorsDB.push(selectedVendorName); vendorsDB.sort(); }
                     Swal.fire({ icon: 'success', title: 'อัพเดทสำเร็จ', timer: 1500, showConfirmButton: false }); updateViews();
@@ -1017,30 +1261,144 @@
         }
 
         async function openWHReceiveModal(rowId) {
+            const claim = claimsDB.find(c => c.rowId === rowId);
+            if (!claim) return;
+
             const { value: formValues } = await Swal.fire({
-                title: 'ยืนยันรับสินค้าเข้าคลัง',
+                title: 'จัดการรับของ / ตีกลับขนส่ง',
                 html: `
                     <div class="text-left mt-2 space-y-4">
-                        <div class="bg-sky-50 text-sky-700 text-[11px] p-3 rounded-xl border border-sky-100 flex items-start"><i class="fa-solid fa-circle-info mt-0.5 mr-2"></i><span>หมายถึงคลังสินค้าได้รับของเสียชิ้นนี้มาเก็บไว้เรียบร้อยแล้ว</span></div>
-                        <div><label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">ระบุโลเคชั่นจัดเก็บ <span class="text-rose-500">*</span></label><input type="text" id="swal-wh-location" required placeholder="เช่น Z-01-A..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm font-bold"></div>
-                        <div><label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">ชื่อผู้รับ/จัดเก็บ <span class="text-rose-500">*</span></label><input type="text" id="swal-wh-receiver" required value="${currentUser || ''}" placeholder="ชื่อพนักงาน..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm font-bold"></div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">การดำเนินการ <span class="text-rose-500">*</span></label>
+                            <select id="swal-wh-action" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium">
+                                <option value="รับเข้าคลัง">รับสินค้าเข้าคลังและจัดเก็บ</option>
+                                <option value="ตีกลับขนส่ง">ตีกลับ/คืนสินค้ากับขนส่งทันที</option>
+                            </select>
+                        </div>
+                        
+                        <!-- รับเข้าคลัง -->
+                        <div id="swal-wh-receive-div" class="space-y-3 border-t border-slate-100 pt-3">
+                            <div><label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">ระบุโลเคชั่นจัดเก็บ <span class="text-rose-500">*</span></label><input type="text" id="swal-wh-location" placeholder="เช่น Z-01-A..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm font-bold"></div>
+                        </div>
+
+                        <!-- ตีกลับขนส่ง -->
+                        <div id="swal-wh-return-div" class="space-y-3 border-t border-slate-100 pt-3" style="display: none;">
+                            <div class="bg-indigo-50 text-indigo-700 text-[10px] p-2 rounded-lg border border-indigo-100"><i class="fa-solid fa-circle-info mr-1"></i> สินค้าจะถูกตั้งสถานะเคลมเป็น "สำเร็จแล้ว" อัตโนมัติ</div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">รูปแบบการคืน <span class="text-rose-500">*</span></label>
+                                <select id="swal-trans-type" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium">
+                                    <option value="">-- เลือกรูปแบบ --</option>
+                                    <option value="คืนสินค้า-ทำCN">คืนสินค้า-ทำCN</option>
+                                    <option value="คืนสินค้าหักในบิล">คืนสินค้าหักในบิล</option>
+                                </select>
+                            </div>
+                            <div id="swal-trans-po-div" style="display: none;">
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">เลขที่ PO</label>
+                                <input type="text" id="swal-trans-po" placeholder="ระบุเลขที่ PO..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                            </div>
+                            <div id="swal-trans-bill-div" style="display: none;" class="gap-2 mt-3">
+                                <div class="flex-1"><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">บิลเลขที่</label><input type="text" id="swal-trans-bill" placeholder="บิลเลขที่..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm"></div>
+                                <div class="flex-1"><label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">ยอดหัก</label><input type="number" id="swal-trans-amount" placeholder="ยอดหัก..." class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 text-sm"></div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-slate-100 pt-3"><label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">ชื่อผู้ดำเนินการ <span class="text-rose-500">*</span></label><input type="text" id="swal-wh-receiver" required value="${currentUser || ''}" placeholder="ชื่อพนักงาน..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-slate-800 text-sm font-bold"></div>
                     </div>
                 `,
-                focusConfirm: false, showCancelButton: true, confirmButtonText: '<i class="fa-solid fa-check mr-1"></i> ยืนยันรับสินค้า', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#10b981', customClass: { popup: 'rounded-3xl' },
+                focusConfirm: false, showCancelButton: true, confirmButtonText: '<i class="fa-solid fa-check mr-1"></i> บันทึกการดำเนินการ', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#10b981', customClass: { popup: 'rounded-3xl' },
+                didOpen: () => {
+                    const actionSelect = document.getElementById('swal-wh-action');
+                    const receiveDiv = document.getElementById('swal-wh-receive-div');
+                    const returnDiv = document.getElementById('swal-wh-return-div');
+                    
+                    const typeSelect = document.getElementById('swal-trans-type');
+                    const poDiv = document.getElementById('swal-trans-po-div');
+                    const billDiv = document.getElementById('swal-trans-bill-div');
+
+                    actionSelect.addEventListener('change', (e) => {
+                        if (e.target.value === 'รับเข้าคลัง') {
+                            receiveDiv.style.display = 'block';
+                            returnDiv.style.display = 'none';
+                        } else {
+                            receiveDiv.style.display = 'none';
+                            returnDiv.style.display = 'block';
+                        }
+                    });
+
+                    typeSelect.addEventListener('change', (e) => {
+                        const val = e.target.value;
+                        poDiv.style.display = val ? 'block' : 'none';
+                        billDiv.style.display = (val === 'คืนสินค้าหักในบิล') ? 'flex' : 'none';
+                    });
+                },
                 preConfirm: () => {
-                    const loc = document.getElementById('swal-wh-location').value.trim(); const receiver = document.getElementById('swal-wh-receiver').value.trim();
-                    if (!loc || !receiver) { Swal.showValidationMessage('กรุณาระบุโลเคชั่นและชื่อผู้รับให้ครบถ้วน'); return false; }
-                    return { whLocation: loc, whReceiverName: receiver };
+                    const actionType = document.getElementById('swal-wh-action').value;
+                    const receiver = document.getElementById('swal-wh-receiver').value.trim();
+                    if (!receiver) { Swal.showValidationMessage('กรุณาระบุชื่อผู้ดำเนินการ'); return false; }
+
+                    if (actionType === 'รับเข้าคลัง') {
+                        const loc = document.getElementById('swal-wh-location').value.trim();
+                        if (!loc) { Swal.showValidationMessage('กรุณาระบุโลเคชั่นจัดเก็บ'); return false; }
+                        return { actionType, whLocation: loc, whReceiverName: receiver };
+                    } else {
+                        const type = document.getElementById('swal-trans-type').value;
+                        if (!type) { Swal.showValidationMessage('กรุณาเลือกรูปแบบการคืนสินค้า'); return false; }
+                        return {
+                            actionType,
+                            whReceiverName: receiver,
+                            claimType: type,
+                            claimPoNo: document.getElementById('swal-trans-po').value,
+                            claimBillNo: document.getElementById('swal-trans-bill').value,
+                            claimAmount: document.getElementById('swal-trans-amount').value
+                        };
+                    }
                 }
             });
 
             if (formValues) {
                 Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
                 try {
-                    if(SCRIPT_URL !== '') { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'confirmWHReceive', rowId: rowId, whLocation: formValues.whLocation, whReceiverName: formValues.whReceiverName }) }); }
+                    let formattedReturnDate = getTodayStr();
+                    if(SCRIPT_URL !== '') {
+                        try {
+                            await fetch(SCRIPT_URL, {
+                                method: 'POST',
+                                body: JSON.stringify({ action: 'confirmWHReceive', rowId: rowId, whReceivedStatus: formValues.actionType === 'ตีกลับขนส่ง' ? 'ตีกลับขนส่ง' : 'รับแล้ว', whLocation: formValues.whLocation, whReceiverName: formValues.whReceiverName })
+                            });
+                        } catch(e) { console.warn(e); }
+
+                        if (formValues.actionType === 'ตีกลับขนส่ง') {
+                            try {
+                                await fetch(SCRIPT_URL, {
+                                    method: 'POST',
+                                    body: JSON.stringify({ action: 'updateStatus', rowId: rowId, status: 'สำเร็จแล้ว', returnDate: formattedReturnDate, claimType: formValues.claimType, claimBillNo: formValues.claimBillNo, claimAmount: formValues.claimAmount, returnChannel: 'ขนส่งมารับสินค้ากลับ', claimPoNo: formValues.claimPoNo })
+                                });
+                            } catch(e) { console.warn(e); }
+                        }
+                    }
+
                     const itemIndex = claimsDB.findIndex(c => c.rowId === rowId);
-                    if(itemIndex > -1) { claimsDB[itemIndex].whReceived = 'รับแล้ว'; claimsDB[itemIndex].whLocation = formValues.whLocation; claimsDB[itemIndex].whReceiverName = formValues.whReceiverName; }
-                    sendAppLog('WH Receive', `คลังรับสินค้า Row ${rowId}`); Swal.fire({ icon: 'success', title: 'รับสินค้าเข้าคลังแล้ว', timer: 1500, showConfirmButton: false }); updateViews();
+                    if(itemIndex > -1) {
+                        if (formValues.actionType === 'ตีกลับขนส่ง') {
+                            claimsDB[itemIndex].whReceived = 'ตีกลับขนส่ง';
+                            claimsDB[itemIndex].whReceiverName = formValues.whReceiverName;
+                            claimsDB[itemIndex].status = 'สำเร็จแล้ว';
+                            claimsDB[itemIndex].returnDate = formattedReturnDate;
+                            claimsDB[itemIndex].claimType = formValues.claimType;
+                            claimsDB[itemIndex].claimBillNo = formValues.claimBillNo;
+                            claimsDB[itemIndex].claimAmount = formValues.claimAmount;
+                            claimsDB[itemIndex].returnChannel = 'ขนส่งมารับสินค้ากลับ';
+                            claimsDB[itemIndex].claimPoNo = formValues.claimPoNo;
+                        } else {
+                            claimsDB[itemIndex].whReceived = 'รับแล้ว';
+                            claimsDB[itemIndex].whLocation = formValues.whLocation;
+                            claimsDB[itemIndex].whReceiverName = formValues.whReceiverName;
+                        }
+                    }
+
+                    sendAppLog('WH Action', `คลังจัดการสินค้า Row ${rowId} แบบ ${formValues.actionType}`);
+                    Swal.fire({ icon: 'success', title: 'บันทึกสำเร็จ', timer: 1500, showConfirmButton: false });
+                    updateViews();
                 } catch (err) { Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message }); }
             }
         }
